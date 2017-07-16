@@ -1,0 +1,281 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.anupkumarpanwar.maps.MapsActivity" />
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/car"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/cab"/>
+
+
+    <Button
+        android:text="Book Now"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnBookNow"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@color/cast_expanded_controller_background_color"
+        android:textColor="#729b01"
+        android:visibility="invisible" />
+
+    <EditText
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/source_location"
+        android:hint="Where from?"
+        android:textColor="#7e7e7f"
+        android:background="#ffffff"
+        android:paddingBottom="10dp"
+        android:paddingLeft="30dp"
+        android:paddingTop="10dp"
+        android:textSize="15dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <ImageView
+        android:layout_width="10dp"
+        android:background="#04b904"
+        android:id="@+id/green_dot"
+        android:layout_height="10dp"
+        android:layout_marginLeft="11dp"
+        android:layout_marginStart="11dp"
+        android:layout_marginBottom="15dp"
+        android:layout_alignBottom="@+id/source_location"
+        android:layout_alignLeft="@+id/source_location"
+        android:layout_alignStart="@+id/source_location" />
+
+    <EditText
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/destination_location"
+        android:hint="Where to?"
+        android:textColor="#7e7e7f"
+        android:background="#ffffff"
+        android:paddingBottom="10dp"
+        android:paddingLeft="30dp"
+        android:paddingTop="10dp"
+        android:textSize="15dp"
+        android:layout_below="@+id/green_dot"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <ImageView
+        android:layout_width="10dp"
+        android:background="#d70407"
+        android:id="@+id/red_dot"
+        android:layout_height="10dp"
+        android:layout_alignBottom="@+id/destination_location"
+        android:layout_alignLeft="@+id/green_dot"
+        android:layout_alignStart="@+id/green_dot"
+        android:layout_marginBottom="15dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="145dp"
+        android:id="@+id/driver_details"
+        android:layout_alignParentBottom="true"
+        android:background="#a3a3a3">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="#ffffff"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:id="@+id/linearLayout1">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="113dp"
+                android:layout_height="match_parent"
+                android:id="@+id/ll_call">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/phone"
+                    android:id="@+id/imageView2"
+                    android:layout_gravity="center"/>
+
+                <TextView
+                    android:text="CALL DRIVER"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView4"
+                    android:textAlignment="center"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="146dp"
+                android:layout_height="match_parent"
+                android:id="@+id/ll_share">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/share"
+                    android:id="@+id/imageView3"
+                    android:layout_gravity="center"/>
+
+                <TextView
+                    android:text="SHARE DETAILS"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView5"
+                    android:textAlignment="center"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/ll_cancel">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/cancelride"
+                    android:id="@+id/imageView4"
+                    android:layout_gravity="center"/>
+
+                <TextView
+                    android:text="CANCEL RIDE"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView6"
+                    android:textAlignment="center"
+                    android:textSize="10sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="#ffffff"
+            android:id="@+id/linearLayout2"
+            android:layout_above="@id/linearLayout1"
+            android:layout_marginBottom="1dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="182dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp">
+
+                <TextView
+                    android:text="PB01A"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cab_no_a"
+                    android:textAlignment="textStart"
+                    android:textSize="14dp" />
+
+                <TextView
+                    android:text="9759"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cab_no_b"
+                    android:textSize="25dp"
+                    android:textColor="#000000"
+                    android:textAlignment="textStart" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="10dp">
+
+                <TextView
+                    android:text="Amandeep Singh"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/driver_name"
+                    android:textAlignment="viewEnd"
+                    android:textSize="14dp" />
+
+                <TextView
+                    android:text="OTP : 4271"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/ride_otp"
+                    android:textSize="25dp"
+                    android:textColor="#000000"
+                    android:textAlignment="viewEnd" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_above="@+id/linearLayout2"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="1dp"
+            android:background="#ffffff">
+
+            <TextView
+                android:text="Total Fare"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView3"
+                android:textAlignment="center" />
+
+            <TextView
+                android:text="Rs. 20"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/ride_fare"
+                android:textColor="#000000"
+                android:textSize="15dp"
+                android:textAlignment="center" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+
+
+</RelativeLayout>
+
+
+
