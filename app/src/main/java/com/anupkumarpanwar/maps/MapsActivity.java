@@ -13,6 +13,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -52,6 +53,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.vision.text.Line;
 
 import org.json.JSONObject;
 
@@ -69,6 +71,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -90,11 +94,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Button btnBookNow;
     ImageView cab;
     RelativeLayout driver_info;
-    LinearLayout ll_call, ll_share;
-    String driver_name, cab_no, otp, fare, driver_phone;
+    LinearLayout ll_call, ll_share, ll_cancel;
+    String driver_name, cab_no, cab_id, otp, fare, driver_phone, ride_id;
     TextView cab_no_a, cab_no_b, ride_otp, ride_driver_name, ride_fare;
     String PREFS_NAME = "auth_info";
     ProgressDialog progressDialog;
+    Timer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +118,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         progressDialog.setProgress(0);
         progressDialog.setCancelable(false);
 
+        ll_call=(LinearLayout)findViewById(R.id.ll_call);
+        ll_share=(LinearLayout)findViewById(R.id.ll_share);
+        ll_cancel=(LinearLayout)findViewById(R.id.ll_cancel);
+
         cab_no_a=(TextView)findViewById(R.id.cab_no_a);
         cab_no_b=(TextView)findViewById(R.id.cab_no_b);
         ride_driver_name=(TextView)findViewById(R.id.driver_name);
@@ -122,18 +131,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btnBookNow=(Button)findViewById(R.id.btnBookNow);
         btnBookNow.setVisibility(View.GONE);
 
-        btnBookNow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new book_ride().execute();
 
-                progressDialog.show();
-            }
-        });
 
         cab=(ImageView)findViewById(R.id.cab);
         cab.setVisibility(View.GONE);
 
+        timer=new Timer();
 
         markerPoints = new ArrayList<LatLng>();
 
@@ -146,6 +149,170 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         source_location=(EditText)findViewById(R.id.source_location);
         destination_location=(EditText)findViewById(R.id.destination_location);
+
+
+
+        btnBookNow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                progressDialog.show();
+
+                try {
+
+                    String api_url="https://nearcabs.000webhostapp.com/api/book_cab.php";
+
+                    double src_lat=source_location_marker.getPosition().latitude;
+                    double src_lng=source_location_marker.getPosition().longitude;
+
+                    double dest_lat=destination_location_marker.getPosition().latitude;
+                    double dest_lng=destination_location_marker.getPosition().longitude;
+
+                    SharedPreferences sharedPreferences= getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+
+                    String user_id=sharedPreferences.getString("id", null);
+
+                    String book_now_request="user_id="+ URLEncoder.encode(user_id, "UTF-8")+ "&src_lat="+ URLEncoder.encode(String.valueOf(src_lat), "UTF-8")+"&src_lng="+URLEncoder.encode(String.valueOf(src_lng), "UTF-8")+"&dest_lat="+URLEncoder.encode(String.valueOf(dest_lat), "UTF-8")+"&dest_lng="+URLEncoder.encode(String.valueOf(dest_lng), "UTF-8");
+
+                    JSONObject response_data=call_api(api_url, book_now_request);
+                    if(response_data.getString("status").equals("1"))
+                    {
+                        if (nearby_cab != null) {
+                            nearby_cab.remove();
+                        }
+
+                        MarkerOptions markerOptions1=new MarkerOptions();
+                        JSONObject book_cab_response_data=response_data.getJSONObject("data");
+
+                        ride_id=book_cab_response_data.getString("ride_id");
+
+                        cab_no=book_cab_response_data.getString("cab_no");
+                        cab_id=book_cab_response_data.getString("cab_id");
+
+
+                        driver_name=book_cab_response_data.getString("driver_name");
+
+
+                        driver_phone=book_cab_response_data.getString("driver_phone");
+
+                        otp="OTP : "+book_cab_response_data.getString("otp");
+
+
+                        fare="Rs. "+book_cab_response_data.getString("fare");
+
+                        cab_no_a.setText(cab_no.split(" ")[0]);
+                        cab_no_b.setText(cab_no.split(" ")[1]);
+
+                        ride_driver_name.setText(driver_name);
+                        ride_otp.setText(otp);
+
+                        ride_fare.setText(fare);
+
+
+
+                        ll_call.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                                callIntent.setData(Uri.parse("tel:"+driver_phone));
+
+                                if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                                        Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                                    return;
+                                }
+                                startActivity(callIntent);
+                            }
+                        });
+
+
+
+                        ll_share.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                                sharingIntent.setType("text/plain");
+                                String shareBody = driver_name+" ("+driver_phone+") is on the way in Cab number "+cab_no+". You are paying "+fare+" for this ride. Share "+otp+" with the driver to start the ride.";
+                                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Near Cabs Booking");
+                                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                                startActivity(Intent.createChooser(sharingIntent, "Share via"));
+                            }
+                        });
+
+
+
+                        ll_cancel.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                             try {
+                                 String cancel_api_url = "https://nearcabs.000webhostapp.com/api/cancel_book_cab.php";
+                                 String cancel_book_now_request = "ride_id=" + URLEncoder.encode(ride_id, "UTF-8");
+
+                                 JSONObject cancel_response_data = call_api(cancel_api_url, cancel_book_now_request);
+                                 if (cancel_response_data.getString("status").equals("1")) {
+                                     Toast.makeText(getApplicationContext(), "Booking Cancelled", Toast.LENGTH_SHORT).show();
+                                     driver_info.setVisibility(View.GONE);
+                                     btnBookNow.setVisibility(View.VISIBLE);
+                                 }
+                             }
+                             catch (Exception e)
+                             {
+                                 Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                             }
+                            }
+                        });
+
+
+
+
+
+
+
+
+                        btnBookNow.setVisibility(View.GONE);
+                        driver_info.setVisibility(View.VISIBLE);
+
+
+
+                        progressDialog.hide();
+
+                        timer.scheduleAtFixedRate(new TimerTask() {
+                            @Override
+                            public void run() {
+                                updateNearbyCabPosition();
+                            }
+                        },0,10000);
+
+//                        LatLng nearby_cab_position= new LatLng(Double.parseDouble(book_cab_response_data.getString("cab_lat")), Double.parseDouble(book_cab_response_data.getString("cab_lng")));
+//                        markerOptions1.position(nearby_cab_position);
+//
+//                        BitmapDrawable bitmapDrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.car);
+//                        Bitmap b = bitmapDrawable.getBitmap();
+//                        Bitmap smallCar = Bitmap.createScaledBitmap(b,60, 72,false);
+//                        markerOptions1.icon(BitmapDescriptorFactory.fromBitmap(smallCar));
+//                        markerOptions1.rotation(mLastLocation.getBearing());
+//
+//                        nearby_cab=mMap.addMarker(markerOptions1);
+
+
+                    }
+                    else
+                    {
+                        Toast.makeText(getApplicationContext(), "No cabs nearby",Toast.LENGTH_LONG).show();
+                    }
+
+
+                }
+                catch (Exception e)
+                {
+                    Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
+                }
+
+
+            }
+        });
+
+
+
+
 
 //        Toast.makeText(getApplicationContext(), this.toString(), Toast.LENGTH_LONG).show();
         final Activity activity=this;
@@ -251,98 +418,53 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-
-    class book_ride extends AsyncTask<String, String, String>
+    public void updateNearbyCabPosition()
     {
-        @Override
-        protected String doInBackground(String... strings) {
-            try {
+        try {
 
-                String api_url="https://nearcabs.000webhostapp.com/api/book_cab.php";
-
-                double src_lat=source_location_marker.getPosition().latitude;
-                double src_lng=source_location_marker.getPosition().longitude;
-
-                double dest_lat=destination_location_marker.getPosition().latitude;
-                double dest_lng=destination_location_marker.getPosition().longitude;
-
-                SharedPreferences sharedPreferences= getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-
-                String user_id=sharedPreferences.getString("id", null);
-
-                String book_now_request="user_id="+ URLEncoder.encode(user_id, "UTF-8")+ "&src_lat="+ URLEncoder.encode(String.valueOf(src_lat), "UTF-8")+"&src_lng="+URLEncoder.encode(String.valueOf(src_lng), "UTF-8")+"&dest_lat="+URLEncoder.encode(String.valueOf(dest_lat), "UTF-8")+"&dest_lng="+URLEncoder.encode(String.valueOf(dest_lng), "UTF-8");
-
-                JSONObject response_data=call_api(api_url, book_now_request);
-                if(response_data.getString("status").equals("1"))
-                {
-                    if (nearby_cab != null) {
-                        nearby_cab.remove();
-                    }
-
-                    MarkerOptions markerOptions1=new MarkerOptions();
-                    JSONObject book_cab_response_data=response_data.getJSONObject("data");
-
-                    cab_no=book_cab_response_data.getString("cab_no");
+            String api_url="https://nearcabs.000webhostapp.com/api/get_cab_location.php";
 
 
-                    driver_name=book_cab_response_data.getString("driver_name");
 
+            String get_cab_location_request="cab_id="+ URLEncoder.encode(cab_id, "UTF-8");
 
-                    driver_phone=book_cab_response_data.getString("driver_phone");
-
-                    otp="OTP : "+book_cab_response_data.getString("otp");
-
-
-                    fare="Rs. "+book_cab_response_data.getString("fare");
-
-
-                    cab_no_a.setText(cab_no.split(" ")[0]);
-                    cab_no_b.setText(cab_no.split(" ")[1]);
-
-                    ride_driver_name.setText(driver_name);
-                    ride_otp.setText(otp);
-
-                    ride_fare.setText(fare);
-
-
-                    LatLng nearby_cab_position= new LatLng(Double.parseDouble(book_cab_response_data.getString("cab_lat")), Double.parseDouble(book_cab_response_data.getString("cab_lng")));
-                    markerOptions1.position(nearby_cab_position);
-
-                    BitmapDrawable bitmapDrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.car);
-                    Bitmap b = bitmapDrawable.getBitmap();
-                    Bitmap smallCar = Bitmap.createScaledBitmap(b,60, 72,false);
-                    markerOptions1.icon(BitmapDescriptorFactory.fromBitmap(smallCar));
-                    markerOptions1.rotation(mLastLocation.getBearing());
-
-                    nearby_cab=mMap.addMarker(markerOptions1);
-
-
-                }
-                else
-                {
-                    Toast.makeText(getApplicationContext(), "No cabs nearby",Toast.LENGTH_LONG).show();
-                }
-
-
-            }
-            catch (Exception e)
+            JSONObject response_data=call_api(api_url, get_cab_location_request);
+            if(response_data.getString("status").equals("1"))
             {
-//                Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_LONG).show();
+                if (nearby_cab != null) {
+                    nearby_cab.remove();
+                }
+
+                MarkerOptions markerOptions1=new MarkerOptions();
+                JSONObject get_cab_position_response_data=response_data.getJSONObject("data");
+
+
+                LatLng nearby_cab_position= new LatLng(Double.parseDouble(get_cab_position_response_data.getString("cab_lat")), Double.parseDouble(get_cab_position_response_data.getString("cab_lng")));
+                markerOptions1.position(nearby_cab_position);
+
+                BitmapDrawable bitmapDrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.car);
+                Bitmap b = bitmapDrawable.getBitmap();
+                Bitmap smallCar = Bitmap.createScaledBitmap(b,60, 72,false);
+                markerOptions1.icon(BitmapDescriptorFactory.fromBitmap(smallCar));
+                markerOptions1.rotation(Float.parseFloat(get_cab_position_response_data.getString("cab_bearing")));
+
+                nearby_cab=mMap.addMarker(markerOptions1);
+
+
             }
-            return null;
+            else if (response_data.getString("status").equals("2"))
+            {
+                timer.cancel();
+                timer=null;
+            }
+
+        }
+        catch (Exception e)
+        {
+//            Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
         }
 
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            // dismiss the dialog once done
 
-
-            btnBookNow.setVisibility(View.GONE);
-            driver_info.setVisibility(View.VISIBLE);
-
-            progressDialog.hide();
-        }
     }
 
     public JSONObject call_api(String api_url, String request_data)
@@ -448,7 +570,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 destination_location_marker=mMap.addMarker(markerOptions);
 
 
-                if (source_location_marker!=null) {
+                if (source_location.getText().toString()!="" && destination_location.getText().toString()!="") {
                     String url = getDirectionsUrl(source_location_marker.getPosition(), destination_location_marker.getPosition());
                     DownloadTask downloadTask = new DownloadTask();
 
@@ -456,6 +578,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     downloadTask.execute(url);
 
                     btnBookNow.setVisibility(View.VISIBLE);
+                }
+                else {
+                    btnBookNow.setVisibility(View.GONE);
                 }
 
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
@@ -468,6 +593,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
+
 
 
   public void setNearbyCabsOnMap(LatLng latLng)

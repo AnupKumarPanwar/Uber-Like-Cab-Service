@@ -120,7 +120,9 @@
                 android:orientation="vertical"
                 android:layout_width="113dp"
                 android:layout_height="match_parent"
-                android:id="@+id/ll_call">
+                android:id="@+id/ll_call"
+                android:clickable="true"
+                android:background="?attr/selectableItemBackground">
 
                 <ImageView
                     android:layout_width="20dp"
@@ -142,7 +144,9 @@
                 android:orientation="vertical"
                 android:layout_width="146dp"
                 android:layout_height="match_parent"
-                android:id="@+id/ll_share">
+                android:id="@+id/ll_share"
+                android:clickable="true"
+                android:background="?attr/selectableItemBackground">
 
                 <ImageView
                     android:layout_width="20dp"
@@ -164,7 +168,9 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/ll_cancel">
+                android:id="@+id/ll_cancel"
+                android:clickable="true"
+                android:background="?attr/selectableItemBackground">
 
                 <ImageView
                     android:layout_width="20dp"
