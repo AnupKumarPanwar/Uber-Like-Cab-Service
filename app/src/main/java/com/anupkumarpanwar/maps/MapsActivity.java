@@ -17,6 +17,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -100,11 +102,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String PREFS_NAME = "auth_info";
     ProgressDialog progressDialog;
     Timer timer;
+    Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        handler=new Handler();
 
         driver_info=(RelativeLayout)findViewById(R.id.driver_details);
 
@@ -180,7 +185,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             nearby_cab.remove();
                         }
 
-                        MarkerOptions markerOptions1=new MarkerOptions();
+//                        MarkerOptions markerOptions1=new MarkerOptions();
                         JSONObject book_cab_response_data=response_data.getJSONObject("data");
 
                         ride_id=book_cab_response_data.getString("ride_id");
@@ -274,23 +279,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         progressDialog.hide();
 
-                        timer.scheduleAtFixedRate(new TimerTask() {
-                            @Override
-                            public void run() {
-                                updateNearbyCabPosition();
-                            }
-                        },0,10000);
+//                        updateNearbyCabPosition();
 
-//                        LatLng nearby_cab_position= new LatLng(Double.parseDouble(book_cab_response_data.getString("cab_lat")), Double.parseDouble(book_cab_response_data.getString("cab_lng")));
-//                        markerOptions1.position(nearby_cab_position);
-//
-//                        BitmapDrawable bitmapDrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.car);
-//                        Bitmap b = bitmapDrawable.getBitmap();
-//                        Bitmap smallCar = Bitmap.createScaledBitmap(b,60, 72,false);
-//                        markerOptions1.icon(BitmapDescriptorFactory.fromBitmap(smallCar));
-//                        markerOptions1.rotation(mLastLocation.getBearing());
-//
-//                        nearby_cab=mMap.addMarker(markerOptions1);
+                        handler.postDelayed(runnable, 0);
 
 
                     }
@@ -418,54 +409,77 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public void updateNearbyCabPosition()
-    {
-        try {
-
-            String api_url="https://nearcabs.000webhostapp.com/api/get_cab_location.php";
 
 
 
-            String get_cab_location_request="cab_id="+ URLEncoder.encode(cab_id, "UTF-8");
+    public Runnable runnable=new Runnable() {
+        @Override
+        public void run() {
+            MarkerOptions markerOptions1;
+            try {
 
-            JSONObject response_data=call_api(api_url, get_cab_location_request);
-            if(response_data.getString("status").equals("1"))
-            {
-                if (nearby_cab != null) {
-                    nearby_cab.remove();
+                String api_url="https://nearcabs.000webhostapp.com/api/get_cab_location.php";
+
+                String get_cab_location_request="cab_id="+ URLEncoder.encode(cab_id, "UTF-8")+"&ride_id="+ URLEncoder.encode(ride_id, "UTF-8");
+
+                JSONObject response_data=call_api(api_url, get_cab_location_request);
+
+                Toast.makeText(getApplicationContext(), response_data.toString(), Toast.LENGTH_LONG).show();
+
+                if(response_data.getString("status").equals("1"))
+                {
+                    if (nearby_cab != null) {
+//                    nearby_cab.remove();
+                    }
+
+                    markerOptions1=new MarkerOptions();
+                    JSONObject get_cab_position_response_data=response_data.getJSONObject("data");
+
+
+                    LatLng nearby_cab_position= new LatLng(Double.parseDouble(get_cab_position_response_data.getString("cab_lat"))+1, Double.parseDouble(get_cab_position_response_data.getString("cab_lng"))+1);
+                    markerOptions1.position(nearby_cab_position);
+
+                    BitmapDrawable bitmapDrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.car);
+                    Bitmap b = bitmapDrawable.getBitmap();
+                    Bitmap smallCar = Bitmap.createScaledBitmap(b,60, 72,false);
+                    markerOptions1.icon(BitmapDescriptorFactory.fromBitmap(smallCar));
+                    markerOptions1.rotation(Float.parseFloat(get_cab_position_response_data.getString("cab_bearing")));
+
+                    nearby_cab=mMap.addMarker(markerOptions1);
+
+                    handler.postDelayed(this, 10000);
+                }
+                else if (response_data.getString("status").equals("2"))
+                {
+                    ll_cancel.setClickable(false);
+                    handler.removeCallbacksAndMessages(runnable);
+                    if(nearby_cab!=null)
+                    {
+                        nearby_cab.remove();
+                    }
+
+                    tripStarted=true;
+                    cab.setVisibility(View.VISIBLE);
+                }
+                else if (response_data.getString("status").equals("3"))
+                {
+                    ll_cancel.setClickable(false);
+                    handler.removeCallbacksAndMessages(runnable);
+                }
+                else
+                {
+                    handler.postDelayed(this, 10000);
                 }
 
-                MarkerOptions markerOptions1=new MarkerOptions();
-                JSONObject get_cab_position_response_data=response_data.getJSONObject("data");
-
-
-                LatLng nearby_cab_position= new LatLng(Double.parseDouble(get_cab_position_response_data.getString("cab_lat")), Double.parseDouble(get_cab_position_response_data.getString("cab_lng")));
-                markerOptions1.position(nearby_cab_position);
-
-                BitmapDrawable bitmapDrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.car);
-                Bitmap b = bitmapDrawable.getBitmap();
-                Bitmap smallCar = Bitmap.createScaledBitmap(b,60, 72,false);
-                markerOptions1.icon(BitmapDescriptorFactory.fromBitmap(smallCar));
-                markerOptions1.rotation(Float.parseFloat(get_cab_position_response_data.getString("cab_bearing")));
-
-                nearby_cab=mMap.addMarker(markerOptions1);
-
-
             }
-            else if (response_data.getString("status").equals("2"))
+            catch (Exception e)
             {
-                timer.cancel();
-                timer=null;
+                    handler.postDelayed(this, 10000);
             }
 
-        }
-        catch (Exception e)
-        {
-//            Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
-        }
 
-
-    }
+        }
+    };
 
     public JSONObject call_api(String api_url, String request_data)
     {
@@ -570,7 +584,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 destination_location_marker=mMap.addMarker(markerOptions);
 
 
-                if (source_location.getText().toString()!="" && destination_location.getText().toString()!="") {
+                if (!source_location.getText().toString().equals("") && !destination_location.getText().toString().equals("")) {
                     String url = getDirectionsUrl(source_location_marker.getPosition(), destination_location_marker.getPosition());
                     DownloadTask downloadTask = new DownloadTask();
 
@@ -863,7 +877,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
         mMap.setTrafficEnabled(true);
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(1));
 //        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(0, 0), 18.0f));
         mMap.setMyLocationEnabled(false);
 
@@ -885,7 +899,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         {
             try
             {
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(1));
 
                 Geocoder geocoder = new Geocoder(this, Locale.getDefault());
                 List<android.location.Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
@@ -932,6 +946,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .tilt(90)                   // Sets the tilt of the camera to 30 degrees
                     .build();                   // Creates a CameraPosition from the builder
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
         }
 
     }
