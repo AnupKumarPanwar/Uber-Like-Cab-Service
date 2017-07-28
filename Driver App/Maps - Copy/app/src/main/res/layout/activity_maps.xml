@@ -1,0 +1,196 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.anupkumarpanwar.driver.MapsActivity" />
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/car"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/cab"/>
+
+
+    <EditText
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/source_location"
+        android:hint="Where from?"
+        android:textColor="#7e7e7f"
+        android:background="#ffffff"
+        android:paddingBottom="10dp"
+        android:paddingLeft="30dp"
+        android:paddingTop="10dp"
+        android:textSize="15dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:clickable="false"
+        android:editable="false"/>
+
+    <ImageView
+        android:layout_width="10dp"
+        android:background="#04b904"
+        android:id="@+id/green_dot"
+        android:layout_height="10dp"
+        android:layout_marginLeft="11dp"
+        android:layout_marginStart="11dp"
+        android:layout_marginBottom="15dp"
+        android:layout_alignBottom="@+id/source_location"
+        android:layout_alignLeft="@+id/source_location"
+        android:layout_alignStart="@+id/source_location" />
+
+    <EditText
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/destination_location"
+        android:hint="Where to?"
+        android:textColor="#7e7e7f"
+        android:background="#ffffff"
+        android:paddingBottom="10dp"
+        android:paddingLeft="30dp"
+        android:paddingTop="10dp"
+        android:textSize="15dp"
+        android:layout_below="@+id/green_dot"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:clickable="false"
+        android:editable="false"/>
+
+    <ImageView
+        android:layout_width="10dp"
+        android:background="#d70407"
+        android:id="@+id/red_dot"
+        android:layout_height="10dp"
+        android:layout_alignBottom="@+id/destination_location"
+        android:layout_alignLeft="@+id/green_dot"
+        android:layout_alignStart="@+id/green_dot"
+        android:layout_marginBottom="15dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="145dp"
+        android:id="@+id/booking_details"
+        android:layout_alignParentBottom="true"
+        android:background="#ffffff">
+
+        <Button
+            android:text="Start Ride"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnStartRide"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:background="@color/cast_expanded_controller_background_color"
+            android:textColor="#729b01" />
+
+        <Button
+            android:text="End Ride"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnEndRide"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:background="@color/cast_expanded_controller_background_color"
+            android:textColor="#729b01" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="48dp"
+            android:weightSum="1"
+            android:id="@+id/ll_book_info">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1.30"
+                android:id="@+id/ll_call">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:src="@drawable/driverphoneicon"
+                    android:id="@+id/imageView2"
+                    android:layout_gravity="center"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="251dp"
+                android:layout_height="match_parent"
+                android:weightSum="1"
+                android:id="@+id/ll_">
+
+                <TextView
+                    android:text="No Bookings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txtcustomer_name"
+                    android:layout_weight="0.69"
+                    android:textStyle="normal|bold"
+                    android:textSize="20dp" />
+
+                <TextView
+                    android:text="Please wait for the booking"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:id="@+id/txtpickup_address" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <TextView
+        android:text="Rs. 100"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtFare"
+        android:textAlignment="center"
+        android:background="#fffcd8"
+        android:layout_above="@+id/booking_details"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:textSize="20dp"
+        android:textStyle="normal|bold"
+        android:textAllCaps="false"
+        android:textColor="#000000" />
+
+
+</RelativeLayout>
+
+
+
