@@ -249,7 +249,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             public void onClick(View view) {
                              try {
                                  String cancel_api_url = "https://nearcabs.000webhostapp.com/api/cancel_book_cab.php";
-                                 String cancel_book_now_request = "ride_id=" + URLEncoder.encode(ride_id, "UTF-8");
+                                 String cancel_book_now_request = "ride_id=" + URLEncoder.encode(ride_id, "UTF-8")+ "&cab_id=" + URLEncoder.encode(cab_id, "UTF-8");
 
                                  JSONObject cancel_response_data = call_api(cancel_api_url, cancel_book_now_request);
                                  if (cancel_response_data.getString("status").equals("1")) {
@@ -436,7 +436,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     JSONObject get_cab_position_response_data=response_data.getJSONObject("data");
 
 
-                    LatLng nearby_cab_position= new LatLng(Double.parseDouble(get_cab_position_response_data.getString("cab_lat"))+1, Double.parseDouble(get_cab_position_response_data.getString("cab_lng"))+1);
+                    LatLng nearby_cab_position= new LatLng(Double.parseDouble(get_cab_position_response_data.getString("cab_lat")), Double.parseDouble(get_cab_position_response_data.getString("cab_lng")));
                     markerOptions1.position(nearby_cab_position);
 
                     BitmapDrawable bitmapDrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.car);
@@ -877,7 +877,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
         mMap.setTrafficEnabled(true);
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(1));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
 //        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(0, 0), 18.0f));
         mMap.setMyLocationEnabled(false);
 
@@ -899,7 +899,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         {
             try
             {
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(1));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
 
                 Geocoder geocoder = new Geocoder(this, Locale.getDefault());
                 List<android.location.Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);

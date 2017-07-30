@@ -13,7 +13,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.anupkumarpanwar.driver.MapsActivity" />
+        tools:context="com.anupkumarpanwar.nearcabdriver.MapsActivity" />
 
     <ImageView
         android:layout_width="30dp"

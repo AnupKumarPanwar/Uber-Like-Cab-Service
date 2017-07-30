@@ -1,4 +1,4 @@
-package com.anupkumarpanwar.driver;
+package com.anupkumarpanwar.nearcabdriver;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

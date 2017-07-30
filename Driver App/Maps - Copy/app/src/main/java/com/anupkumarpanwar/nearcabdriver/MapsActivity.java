@@ -1,15 +1,12 @@
-package com.anupkumarpanwar.driver;
+package com.anupkumarpanwar.nearcabdriver;
 
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -33,21 +30,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -70,7 +60,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Timer;
+
 import com.onesignal.OneSignal;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
@@ -94,13 +84,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ImageView cab;
     RelativeLayout booking_details;
     LinearLayout ll_booking_info, ll_call;
-    String customer_name, otp, fare, cab_id;
+    String customer_name, otp, fare, cab_id, ride_id;
     TextView txtcustomer_name, txtpickup_location, txtFare;
     String PREFS_NAME = "auth_info";
     ProgressDialog progressDialog;
     Handler handler;
     ExampleNotificationReceivedHandler exampleNotificationReceivedHandler;
     ExampleNotificationOpenedHandler exampleNotificationOpenedHandler;
+
+    SharedPreferences sharedPreferences;
 
 
     @Override
@@ -129,6 +121,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 intent.putExtra("destinationLocation", destination_location.getText().toString());
                 intent.putExtra("realOTP", otp);
                 intent.putExtra("fare", fare);
+                intent.putExtra("ride_id", ride_id);
                 startActivity(intent);
                 txtFare.setVisibility(View.VISIBLE);
                 btnStartRide.setVisibility(View.GONE);
@@ -145,21 +138,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 try {
                     String api_url = "https://nearcabs.000webhostapp.com/api/end_ride.php";
 
-                    String end_ride_request = "ride_id=" + URLEncoder.encode(ride_id, "UTF-8");
+                    String end_ride_request = "ride_id=" + URLEncoder.encode(ride_id, "UTF-8") + "&cab_id=" + URLEncoder.encode(cab_id, "UTF-8");
 
                     JSONObject response_data = call_api(api_url, end_ride_request);
 
                     if (response_data.getString("status").equals("1"))
                     {
                         Toast.makeText(getApplicationContext(), "Trip Ended", Toast.LENGTH_LONG).show();
+                        btnEndRide.setVisibility(View.GONE);
+
+                        txtFare.setVisibility(View.GONE);
+                        txtcustomer_name.setText("No Bookings");
+                        txtpickup_location.setText("Please wait for the booking");
+
                         exampleNotificationReceivedHandler.customerName="No bookings";
                         exampleNotificationReceivedHandler.pickupLocation="Please wait for the booking";
+                        exampleNotificationReceivedHandler.customerPhone="0000000000";
+
+                        exampleNotificationOpenedHandler.customerName="No bookings";
+                        exampleNotificationOpenedHandler.pickupLocation="Please wait for the booking";
+                        exampleNotificationOpenedHandler.customerPhone="0000000000";
+
+
 
                     }
                 }
                 catch (Exception e)
                 {
-
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                 }
                 }
         });
@@ -194,6 +200,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .setNotificationReceivedHandler(exampleNotificationReceivedHandler)
                 .setNotificationOpenedHandler(exampleNotificationOpenedHandler)
                 .init();
+
+        OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
+            @Override
+            public void idsAvailable(String userId, String registrationId) {
+                sharedPreferences=getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+                if (registrationId != null ) {
+//                    Toast.makeText(getApplicationContext(), userId, Toast.LENGTH_LONG).show();
+                    Log.d("debug", "registrationId:" + userId);
+
+
+                    try {
+                        String api_url = "https://nearcabs.000webhostapp.com/api/driver_set_one_signal_id.php";
+
+                        String driver_set_one_signal_id_request = "driver_id=" + URLEncoder.encode(sharedPreferences.getString("id", null), "UTF-8") + "&one_signal_id=" + URLEncoder.encode(userId, "UTF-8");
+
+                        JSONObject response_data = call_api(api_url, driver_set_one_signal_id_request);
+
+//                        Toast.makeText(getApplicationContext(), response_data.toString(), Toast.LENGTH_LONG).show();
+
+                    }
+                    catch (Exception e)
+                    {
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        });
 
 
         ll_call.setOnClickListener(new View.OnClickListener() {
@@ -535,6 +568,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             txtcustomer_name.setText(customer_name);
             otp=exampleNotificationReceivedHandler.otp;
             fare=exampleNotificationReceivedHandler.fare;
+            ride_id=exampleNotificationReceivedHandler.ride_id;
+            cab_id=exampleNotificationReceivedHandler.cab_id;
 
             try {
                 Geocoder geocoder = new Geocoder(this, Locale.getDefault());
@@ -584,9 +619,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         else if(!exampleNotificationOpenedHandler.customerPhone.equals("0000000000") && !isTripDataSet)
         {
-            txtcustomer_name.setText(exampleNotificationOpenedHandler.customerName.toString());
+            customer_name=exampleNotificationOpenedHandler.customerName.toString();
+            txtcustomer_name.setText(customer_name);
             otp=exampleNotificationOpenedHandler.otp;
             fare=exampleNotificationOpenedHandler.fare;
+            ride_id=exampleNotificationOpenedHandler.ride_id;
+            cab_id=exampleNotificationOpenedHandler.cab_id;
 
             try {
                 Geocoder geocoder = new Geocoder(this, Locale.getDefault());

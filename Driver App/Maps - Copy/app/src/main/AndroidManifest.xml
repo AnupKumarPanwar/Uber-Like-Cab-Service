@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.anupkumarpanwar.driver">
+    package="com.anupkumarpanwar.nearcabdriver">
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -37,7 +37,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".RegisterActivity"
+            android:name="com.anupkumarpanwar.nearcabdriver.RegisterActivity"
             android:label="@string/title_activity_maps">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -45,10 +45,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MapsActivity" />
-        <activity android:name=".LoginActivity" />
+        <activity android:name="com.anupkumarpanwar.nearcabdriver.MapsActivity" />
+        <activity android:name="com.anupkumarpanwar.nearcabdriver.LoginActivity" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".OTP"></activity>
+        <activity android:name="com.anupkumarpanwar.nearcabdriver.OTP"></activity>
     </application>
 
 </manifest>
