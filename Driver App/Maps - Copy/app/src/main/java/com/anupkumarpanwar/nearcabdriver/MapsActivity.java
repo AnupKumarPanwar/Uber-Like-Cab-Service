@@ -253,7 +253,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         handler=new Handler();
 
-        handler.postDelayed(runnable, 1);
+        handler.postDelayed(runnable, 5000);
 
 //        booking_details.setVisibility(View.GONE);
 
@@ -286,6 +286,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 JSONObject response_data=call_api(api_url, set_cab_location_request);
 
+//                Toast.makeText(getApplicationContext(), response_data.toString(), Toast.LENGTH_LONG).show();
+
                 if (!tripStarted)
                 {
                     handler.postDelayed(this, 10000);
@@ -294,7 +296,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             catch (Exception e)
             {
-
+//                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
     };
