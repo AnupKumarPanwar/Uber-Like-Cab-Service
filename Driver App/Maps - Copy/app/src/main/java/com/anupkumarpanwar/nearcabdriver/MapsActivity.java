@@ -145,6 +145,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (response_data.getString("status").equals("1"))
                     {
                         Toast.makeText(getApplicationContext(), "Trip Ended", Toast.LENGTH_LONG).show();
+                        tripStarted=false;
+
+                        handler.postDelayed(runnable, 1);
+
+
                         btnEndRide.setVisibility(View.GONE);
 
                         txtFare.setVisibility(View.GONE);
@@ -247,6 +252,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         handler=new Handler();
+
+        handler.postDelayed(runnable, 1);
 
 //        booking_details.setVisibility(View.GONE);
 
