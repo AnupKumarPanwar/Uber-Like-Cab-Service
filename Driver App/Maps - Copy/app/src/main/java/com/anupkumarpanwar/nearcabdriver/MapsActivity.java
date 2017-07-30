@@ -282,7 +282,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             try {
                 String api_url="https://nearcabs.000webhostapp.com/api/set_cab_location.php";
 
-                String set_cab_location_request="cab_id="+ URLEncoder.encode(cab_id, "UTF-8")+"&lat="+ URLEncoder.encode(String.valueOf(mLastLocation.getLatitude()), "UTF-8")+"&lng="+ URLEncoder.encode(String.valueOf(mLastLocation.getLongitude()), "UTF-8")+"&bearing="+ URLEncoder.encode(String.valueOf(mLastLocation.getBearing()), "UTF-8");
+                String set_cab_location_request="cab_id="+ URLEncoder.encode(sharedPreferences.getString("cab_no",null), "UTF-8")+"&lat="+ URLEncoder.encode(String.valueOf(mLastLocation.getLatitude()), "UTF-8")+"&lng="+ URLEncoder.encode(String.valueOf(mLastLocation.getLongitude()), "UTF-8")+"&bearing="+ URLEncoder.encode(String.valueOf(mLastLocation.getBearing()), "UTF-8");
 
                 JSONObject response_data=call_api(api_url, set_cab_location_request);
 
