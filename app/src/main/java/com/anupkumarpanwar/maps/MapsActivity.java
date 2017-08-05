@@ -260,7 +260,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                              }
                              catch (Exception e)
                              {
-                                 Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+//                                 Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                              }
                             }
                         });
@@ -294,7 +294,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 catch (Exception e)
                 {
-                    Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
                 }
 
 
@@ -320,10 +320,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         startActivityForResult(builder.build(activity), AUTOCOMPLETE_SOURCE);
                     } catch (GooglePlayServicesRepairableException e) {
                         // TODO: Handle the error.
-                        Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
                     } catch (GooglePlayServicesNotAvailableException e) {
                         // TODO: Handle the error.
-                        Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
 
                     }
                 }
@@ -342,10 +342,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     startActivityForResult(builder.build(activity), AUTOCOMPLETE_SOURCE);
                 } catch (GooglePlayServicesRepairableException e) {
                     // TODO: Handle the error.
-                    Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
                 } catch (GooglePlayServicesNotAvailableException e) {
                     // TODO: Handle the error.
-                    Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
 
                 }
             }
@@ -369,10 +369,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     startActivityForResult(builder.build(activity), AUTOCOMPLETE_DESTINATITON);
                     } catch (GooglePlayServicesRepairableException e) {
                         // TODO: Handle the error.
-                        Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
                     } catch (GooglePlayServicesNotAvailableException e) {
                         // TODO: Handle the error.
-                        Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
 
                     }
                 }
@@ -391,10 +391,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     startActivityForResult(builder.build(activity), AUTOCOMPLETE_DESTINATITON);
                 } catch (GooglePlayServicesRepairableException e) {
                     // TODO: Handle the error.
-                    Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
                 } catch (GooglePlayServicesNotAvailableException e) {
                     // TODO: Handle the error.
-                    Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
 
                 }
             }
@@ -424,7 +424,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 JSONObject response_data=call_api(api_url, get_cab_location_request);
 
-                Toast.makeText(getApplicationContext(), response_data.toString(), Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(), response_data.toString(), Toast.LENGTH_LONG).show();
 
                 if(response_data.getString("status").equals("1"))
                 {
@@ -514,7 +514,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         catch (Exception e)
         {
-            Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_LONG).show();
+//            Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_LONG).show();
         }
 
         return null;
@@ -660,7 +660,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       }
       catch (Exception e)
       {
-          Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_LONG).show();
+//          Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_LONG).show();
       }
   }
 
@@ -931,7 +931,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             catch (Exception e)
             {
-                Toast.makeText(getApplication(), e.getMessage(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplication(), e.getMessage(), Toast.LENGTH_SHORT).show();
             }
 
 
