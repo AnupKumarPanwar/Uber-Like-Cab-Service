@@ -12,7 +12,7 @@ import org.json.JSONObject;
  */
 
 class ExampleNotificationReceivedHandler implements OneSignal.NotificationReceivedHandler {
-    String customerName="No bookings", pickupLocation="Please wait for the booking", customerPhone="0000000000", fare="0", otp="0000", ride_id="000", cab_id="000";
+    public String customerName="No bookings", pickupLocation="Please wait for the booking", customerPhone="0000000000", fare="0", otp="0000", ride_id="000", cab_id="000";
     Double startLat=0.0, startLng=0.0, endLat=0.0, endLng=0.0;
     @Override
     public void notificationReceived(OSNotification notification) {

@@ -170,7 +170,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 catch (Exception e)
                 {
-                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                 }
                 }
         });
@@ -283,6 +283,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             JSONObject response_data=call_api(api_url, check_current_booking_request);
 
+//            Toast.makeText(getApplicationContext(), response_data.toString(), Toast.LENGTH_LONG).show();
+
             if (response_data.getString("status").equals("1"))
             {
                 exampleNotificationReceivedHandler.customerName=response_data.getJSONObject("data").getString("customerName");
@@ -341,16 +343,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         downloadTask.execute(url);
                     }
 
-                    txtFare.setText("Rs. "+fare);
-                    txtFare.setVisibility(View.VISIBLE);
 
-                    btnEndRide.setVisibility(View.VISIBLE);
-                    isTripDataSet=true;
-
-//                    btnStartRide.setVisibility(View.VISIBLE);
 
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+
+
+                txtFare.setText("Rs. "+fare);
+
+                if (tripStarted)
+                {
+                    txtFare.setVisibility(View.VISIBLE);
+                    btnStartRide.setVisibility(View.GONE);
+                    btnEndRide.setVisibility(View.VISIBLE);
+                }
+                else
+                {
+                    txtFare.setVisibility(View.GONE);
+                    btnStartRide.setVisibility(View.VISIBLE);
+                    btnEndRide.setVisibility(View.GONE);
                 }
 
             }
@@ -424,7 +436,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         catch (Exception e)
         {
-            Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_LONG).show();
+//            Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_LONG).show();
         }
 
         return null;
@@ -707,13 +719,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     downloadTask.execute(url);
                 }
 
-                txtFare.setText("Rs. "+fare);
-                isTripDataSet=true;
-                btnStartRide.setVisibility(View.VISIBLE);
+
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            txtFare.setText("Rs. "+fare);
+            isTripDataSet=true;
+            btnStartRide.setVisibility(View.VISIBLE);
 
         }
         else if(!exampleNotificationOpenedHandler.customerPhone.equals("0000000000") && !isTripDataSet)
@@ -762,12 +776,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     downloadTask.execute(url);
                 }
 
-                isTripDataSet=true;
-                btnStartRide.setVisibility(View.VISIBLE);
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+
+            isTripDataSet=true;
+            btnStartRide.setVisibility(View.VISIBLE);
 
         }
 
