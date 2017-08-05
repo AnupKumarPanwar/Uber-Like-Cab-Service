@@ -429,7 +429,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if(response_data.getString("status").equals("1"))
                 {
                     if (nearby_cab != null) {
-//                    nearby_cab.remove();
+                        nearby_cab.remove();
                     }
 
                     markerOptions1=new MarkerOptions();

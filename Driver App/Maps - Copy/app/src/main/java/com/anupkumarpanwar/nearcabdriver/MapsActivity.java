@@ -273,6 +273,96 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+
+
+
+        try {
+            String api_url="https://nearcabs.000webhostapp.com/api/check_current_booking.php";
+
+            String check_current_booking_request="driver_id="+ URLEncoder.encode(sharedPreferences.getString("id",null), "UTF-8");
+
+            JSONObject response_data=call_api(api_url, check_current_booking_request);
+
+            if (response_data.getString("status").equals("1"))
+            {
+                exampleNotificationReceivedHandler.customerName=response_data.getJSONObject("data").getString("customerName");
+                exampleNotificationReceivedHandler.customerPhone=response_data.getJSONObject("data").getString("customerName");
+                exampleNotificationReceivedHandler.startLat=Double.parseDouble(response_data.getJSONObject("data").getString("src_lat"));
+                exampleNotificationReceivedHandler.startLng=Double.parseDouble(response_data.getJSONObject("data").getString("src_lng"));
+                exampleNotificationReceivedHandler.endLat=Double.parseDouble(response_data.getJSONObject("data").getString("dest_lat"));
+                exampleNotificationReceivedHandler.endLng=Double.parseDouble(response_data.getJSONObject("data").getString("dest_lng"));
+
+                exampleNotificationReceivedHandler.fare=response_data.getJSONObject("data").getString("fare");
+                exampleNotificationReceivedHandler.otp=response_data.getJSONObject("data").getString("otp");
+                exampleNotificationReceivedHandler.ride_id=response_data.getJSONObject("data").getString("ride_id");
+                exampleNotificationReceivedHandler.cab_id=response_data.getJSONObject("data").getString("cab_id");
+
+                customer_name=exampleNotificationReceivedHandler.customerName.toString();
+                txtcustomer_name.setText(customer_name);
+                otp=exampleNotificationReceivedHandler.otp;
+                fare=exampleNotificationReceivedHandler.fare;
+                ride_id=exampleNotificationReceivedHandler.ride_id;
+                cab_id=exampleNotificationReceivedHandler.cab_id;
+
+                try {
+                    Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+                    List<Address> addresses;
+                    addresses = geocoder.getFromLocation(exampleNotificationReceivedHandler.startLat, exampleNotificationReceivedHandler.startLng, 1);
+                    String srccityName = addresses.get(0).getAddressLine(0);
+                    String srcstateName = addresses.get(0).getAddressLine(1);
+
+                    txtpickup_location.setText(srccityName+", "+srcstateName);
+
+                    source_location.setText(srccityName+", "+srcstateName);
+
+                    LatLng latLng=new LatLng(exampleNotificationReceivedHandler.startLat, exampleNotificationReceivedHandler.startLng);
+                    MarkerOptions markerOptions=new MarkerOptions();
+                    markerOptions.position(latLng);
+
+                    source_location_marker=mMap.addMarker(markerOptions);
+
+                    addresses = geocoder.getFromLocation(exampleNotificationReceivedHandler.endLat, exampleNotificationReceivedHandler.endLng, 1);
+                    String destcityName = addresses.get(0).getAddressLine(0);
+                    String deststateName = addresses.get(0).getAddressLine(1);
+
+                    destination_location.setText(destcityName+", "+deststateName);
+
+                    LatLng latLng1=new LatLng(exampleNotificationReceivedHandler.endLat, exampleNotificationReceivedHandler.endLng);
+                    MarkerOptions markerOptions1=new MarkerOptions();
+                    markerOptions1.position(latLng1);
+
+                    destination_location_marker=mMap.addMarker(markerOptions1);
+
+                    if (!source_location.getText().toString().equals("") && !destination_location.getText().toString().equals("")) {
+                        String url = getDirectionsUrl(source_location_marker.getPosition(), destination_location_marker.getPosition());
+                        DownloadTask downloadTask = new DownloadTask();
+
+                        // Start downloading json data from Google Directions API
+                        downloadTask.execute(url);
+                    }
+
+                    txtFare.setText("Rs. "+fare);
+                    txtFare.setVisibility(View.VISIBLE);
+
+                    btnEndRide.setVisibility(View.VISIBLE);
+                    isTripDataSet=true;
+
+//                    btnStartRide.setVisibility(View.VISIBLE);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+
+        }
+        catch (Exception e)
+        {
+//                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+
+
     }
 
 
