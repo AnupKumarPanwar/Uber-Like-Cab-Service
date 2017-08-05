@@ -138,7 +138,8 @@
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1.30"
-                android:id="@+id/ll_call">
+                android:id="@+id/ll_call"
+                android:background="?attr/selectableItemBackground">
 
                 <ImageView
                     android:layout_width="match_parent"

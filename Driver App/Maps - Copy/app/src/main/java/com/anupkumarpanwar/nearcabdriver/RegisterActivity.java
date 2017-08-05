@@ -128,7 +128,7 @@ public class RegisterActivity extends AppCompatActivity {
             JSONObject response_data=new JSONObject(response);
             if(response_data.getString("status").equals("1"))
             {
-                Toast.makeText(getApplicationContext(), response_data.getString("data").toString(),Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(), response_data.getString("data").toString(),Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
             }
@@ -141,7 +141,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
         catch (Exception e)
         {
-            Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_LONG).show();
+//            Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_LONG).show();
         }
 
 
