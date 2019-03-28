@@ -1,4 +1,4 @@
-package com.anupkumarpanwar.maps;
+package com.nearcabs.userapp;
 
 
 import android.Manifest;
@@ -18,14 +18,12 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -55,7 +53,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.vision.text.Line;
 
 import org.json.JSONObject;
 
@@ -74,18 +71,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
-import java.util.TimerTask;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
 
-    int flag=0;
-    boolean isSourceSet=false, tripStarted=false;;
+    int flag = 0;
+    boolean isSourceSet = false, tripStarted = false;
+    ;
     EditText source_location, destination_location;
-    String TAG="LocationSelect";
-    int AUTOCOMPLETE_SOURCE = 1, AUTOCOMPLETE_DESTINATITON=2 ;
+    String TAG = "LocationSelect";
+    int AUTOCOMPLETE_SOURCE = 1, AUTOCOMPLETE_DESTINATITON = 2;
     GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
@@ -109,52 +106,50 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        handler=new Handler();
+        handler = new Handler();
 
-        driver_info=(RelativeLayout)findViewById(R.id.driver_details);
+        driver_info = (RelativeLayout) findViewById(R.id.driver_details);
 
         driver_info.setVisibility(View.GONE);
 
 
-        progressDialog=new ProgressDialog(this);
+        progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Booking...");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setIndeterminate(true);
         progressDialog.setProgress(0);
         progressDialog.setCancelable(false);
 
-        ll_call=(LinearLayout)findViewById(R.id.ll_call);
-        ll_share=(LinearLayout)findViewById(R.id.ll_share);
-        ll_cancel=(LinearLayout)findViewById(R.id.ll_cancel);
+        ll_call = (LinearLayout) findViewById(R.id.ll_call);
+        ll_share = (LinearLayout) findViewById(R.id.ll_share);
+        ll_cancel = (LinearLayout) findViewById(R.id.ll_cancel);
 
-        cab_no_a=(TextView)findViewById(R.id.cab_no_a);
-        cab_no_b=(TextView)findViewById(R.id.cab_no_b);
-        ride_driver_name=(TextView)findViewById(R.id.driver_name);
-        ride_otp=(TextView)findViewById(R.id.ride_otp);
-        ride_fare=(TextView)findViewById(R.id.ride_fare);
+        cab_no_a = (TextView) findViewById(R.id.cab_no_a);
+        cab_no_b = (TextView) findViewById(R.id.cab_no_b);
+        ride_driver_name = (TextView) findViewById(R.id.driver_name);
+        ride_otp = (TextView) findViewById(R.id.ride_otp);
+        ride_fare = (TextView) findViewById(R.id.ride_fare);
 
-        btnBookNow=(Button)findViewById(R.id.btnBookNow);
+        btnBookNow = (Button) findViewById(R.id.btnBookNow);
         btnBookNow.setVisibility(View.GONE);
 
 
-
-        cab=(ImageView)findViewById(R.id.cab);
+        cab = (ImageView) findViewById(R.id.cab);
         cab.setVisibility(View.GONE);
 
-        timer=new Timer();
+        timer = new Timer();
 
         markerPoints = new ArrayList<LatLng>();
 
-        StrictMode.ThreadPolicy threadPolicy=new StrictMode.ThreadPolicy.Builder().build();
+        StrictMode.ThreadPolicy threadPolicy = new StrictMode.ThreadPolicy.Builder().build();
         StrictMode.setThreadPolicy(threadPolicy);
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
 
-        source_location=(EditText)findViewById(R.id.source_location);
-        destination_location=(EditText)findViewById(R.id.destination_location);
-
+        source_location = (EditText) findViewById(R.id.source_location);
+        destination_location = (EditText) findViewById(R.id.destination_location);
 
 
         btnBookNow.setOnClickListener(new View.OnClickListener() {
@@ -164,45 +159,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 try {
 
-                    String api_url="https://nearcabs.000webhostapp.com/api/book_cab.php";
+                    String api_url = "https://nearcabs.000webhostapp.com/api/book_cab.php";
 
-                    double src_lat=source_location_marker.getPosition().latitude;
-                    double src_lng=source_location_marker.getPosition().longitude;
+                    double src_lat = source_location_marker.getPosition().latitude;
+                    double src_lng = source_location_marker.getPosition().longitude;
 
-                    double dest_lat=destination_location_marker.getPosition().latitude;
-                    double dest_lng=destination_location_marker.getPosition().longitude;
+                    double dest_lat = destination_location_marker.getPosition().latitude;
+                    double dest_lng = destination_location_marker.getPosition().longitude;
 
-                    SharedPreferences sharedPreferences= getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+                    SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
-                    String user_id=sharedPreferences.getString("id", null);
+                    String user_id = sharedPreferences.getString("id", null);
 
-                    String book_now_request="user_id="+ URLEncoder.encode(user_id, "UTF-8")+ "&src_lat="+ URLEncoder.encode(String.valueOf(src_lat), "UTF-8")+"&src_lng="+URLEncoder.encode(String.valueOf(src_lng), "UTF-8")+"&dest_lat="+URLEncoder.encode(String.valueOf(dest_lat), "UTF-8")+"&dest_lng="+URLEncoder.encode(String.valueOf(dest_lng), "UTF-8");
+                    String book_now_request = "user_id=" + URLEncoder.encode(user_id, "UTF-8") + "&src_lat=" + URLEncoder.encode(String.valueOf(src_lat), "UTF-8") + "&src_lng=" + URLEncoder.encode(String.valueOf(src_lng), "UTF-8") + "&dest_lat=" + URLEncoder.encode(String.valueOf(dest_lat), "UTF-8") + "&dest_lng=" + URLEncoder.encode(String.valueOf(dest_lng), "UTF-8");
 
-                    JSONObject response_data=call_api(api_url, book_now_request);
-                    if(response_data.getString("status").equals("1"))
-                    {
+                    JSONObject response_data = call_api(api_url, book_now_request);
+                    if (response_data.getString("status").equals("1")) {
                         if (nearby_cab != null) {
                             nearby_cab.remove();
                         }
 
 //                        MarkerOptions markerOptions1=new MarkerOptions();
-                        JSONObject book_cab_response_data=response_data.getJSONObject("data");
+                        JSONObject book_cab_response_data = response_data.getJSONObject("data");
 
-                        ride_id=book_cab_response_data.getString("ride_id");
+                        ride_id = book_cab_response_data.getString("ride_id");
 
-                        cab_no=book_cab_response_data.getString("cab_no");
-                        cab_id=book_cab_response_data.getString("cab_id");
-
-
-                        driver_name=book_cab_response_data.getString("driver_name");
+                        cab_no = book_cab_response_data.getString("cab_no");
+                        cab_id = book_cab_response_data.getString("cab_id");
 
 
-                        driver_phone=book_cab_response_data.getString("driver_phone");
-
-                        otp="OTP : "+book_cab_response_data.getString("otp");
+                        driver_name = book_cab_response_data.getString("driver_name");
 
 
-                        fare="Rs. "+book_cab_response_data.getString("fare");
+                        driver_phone = book_cab_response_data.getString("driver_phone");
+
+                        otp = "OTP : " + book_cab_response_data.getString("otp");
+
+
+                        fare = "Rs. " + book_cab_response_data.getString("fare");
 
                         cab_no_a.setText(cab_no.split(" ")[0]);
                         cab_no_b.setText(cab_no.split(" ")[1]);
@@ -213,12 +207,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         ride_fare.setText(fare);
 
 
-
                         ll_call.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 Intent callIntent = new Intent(Intent.ACTION_CALL);
-                                callIntent.setData(Uri.parse("tel:"+driver_phone));
+                                callIntent.setData(Uri.parse("tel:" + driver_phone));
 
                                 if (ActivityCompat.checkSelfPermission(getApplicationContext(),
                                         Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
@@ -229,52 +222,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         });
 
 
-
                         ll_share.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                                Intent sharingIntent = new Intent(Intent.ACTION_SEND);
                                 sharingIntent.setType("text/plain");
-                                String shareBody = driver_name+" ("+driver_phone+") is on the way in Cab number "+cab_no+". You are paying "+fare+" for this ride. Share "+otp+" with the driver to start the ride.";
-                                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Near Cabs Booking");
-                                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                                String shareBody = driver_name + " (" + driver_phone + ") is on the way in Cab number " + cab_no + ". You are paying " + fare + " for this ride. Share " + otp + " with the driver to start the ride.";
+                                sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Near Cabs Booking");
+                                sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
                                 startActivity(Intent.createChooser(sharingIntent, "Share via"));
                             }
                         });
 
 
-
                         ll_cancel.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                             try {
-                                 String cancel_api_url = "https://nearcabs.000webhostapp.com/api/cancel_book_cab.php";
-                                 String cancel_book_now_request = "ride_id=" + URLEncoder.encode(ride_id, "UTF-8")+ "&cab_id=" + URLEncoder.encode(cab_id, "UTF-8");
+                                try {
+                                    String cancel_api_url = "https://nearcabs.000webhostapp.com/api/cancel_book_cab.php";
+                                    String cancel_book_now_request = "ride_id=" + URLEncoder.encode(ride_id, "UTF-8") + "&cab_id=" + URLEncoder.encode(cab_id, "UTF-8");
 
-                                 JSONObject cancel_response_data = call_api(cancel_api_url, cancel_book_now_request);
-                                 if (cancel_response_data.getString("status").equals("1")) {
-                                     Toast.makeText(getApplicationContext(), "Booking Cancelled", Toast.LENGTH_SHORT).show();
-                                     driver_info.setVisibility(View.GONE);
-                                     btnBookNow.setVisibility(View.VISIBLE);
-                                 }
-                             }
-                             catch (Exception e)
-                             {
+                                    JSONObject cancel_response_data = call_api(cancel_api_url, cancel_book_now_request);
+                                    if (cancel_response_data.getString("status").equals("1")) {
+                                        Toast.makeText(getApplicationContext(), "Booking Cancelled", Toast.LENGTH_SHORT).show();
+                                        driver_info.setVisibility(View.GONE);
+                                        btnBookNow.setVisibility(View.VISIBLE);
+                                    }
+                                } catch (Exception e) {
 //                                 Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                             }
+                                }
                             }
                         });
 
 
-
-
-
-
-
-
                         btnBookNow.setVisibility(View.GONE);
                         driver_info.setVisibility(View.VISIBLE);
-
 
 
                         progressDialog.hide();
@@ -284,16 +266,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         handler.postDelayed(runnable, 0);
 
 
-                    }
-                    else
-                    {
-                        Toast.makeText(getApplicationContext(), "No cabs nearby",Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "No cabs nearby", Toast.LENGTH_LONG).show();
                     }
 
 
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
 //                    Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
                 }
 
@@ -302,11 +280,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
 
-
-
-
 //        Toast.makeText(getApplicationContext(), this.toString(), Toast.LENGTH_LONG).show();
-        final Activity activity=this;
+        final Activity activity = this;
 
         source_location.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -352,21 +327,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
 
-
-
-
         destination_location.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
 //                Toast.makeText(getApplicationContext(), "Destination", Toast.LENGTH_SHORT).show();
-                if (b)
-                {
+                if (b) {
                     try {
 //                        Intent intent =
 //                                new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY).build(activity);
 //                        startActivityForResult(intent, AUTOCOMPLETE_DESTINATITON);
-                    PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-                    startActivityForResult(builder.build(activity), AUTOCOMPLETE_DESTINATITON);
+                        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+                        startActivityForResult(builder.build(activity), AUTOCOMPLETE_DESTINATITON);
                     } catch (GooglePlayServicesRepairableException e) {
                         // TODO: Handle the error.
 //                        Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
@@ -401,7 +372,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
 
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -410,79 +380,66 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-
-
-    public Runnable runnable=new Runnable() {
+    public Runnable runnable = new Runnable() {
         @Override
         public void run() {
             MarkerOptions markerOptions1;
             try {
 
-                String api_url="https://nearcabs.000webhostapp.com/api/get_cab_location.php";
+                String api_url = "https://nearcabs.000webhostapp.com/api/get_cab_location.php";
 
-                String get_cab_location_request="cab_id="+ URLEncoder.encode(cab_id, "UTF-8")+"&ride_id="+ URLEncoder.encode(ride_id, "UTF-8");
+                String get_cab_location_request = "cab_id=" + URLEncoder.encode(cab_id, "UTF-8") + "&ride_id=" + URLEncoder.encode(ride_id, "UTF-8");
 
-                JSONObject response_data=call_api(api_url, get_cab_location_request);
+                JSONObject response_data = call_api(api_url, get_cab_location_request);
 
 //                Toast.makeText(getApplicationContext(), response_data.toString(), Toast.LENGTH_LONG).show();
 
-                if(response_data.getString("status").equals("1"))
-                {
+                if (response_data.getString("status").equals("1")) {
                     if (nearby_cab != null) {
                         nearby_cab.remove();
                     }
 
-                    markerOptions1=new MarkerOptions();
-                    JSONObject get_cab_position_response_data=response_data.getJSONObject("data");
+                    markerOptions1 = new MarkerOptions();
+                    JSONObject get_cab_position_response_data = response_data.getJSONObject("data");
 
 
-                    LatLng nearby_cab_position= new LatLng(Double.parseDouble(get_cab_position_response_data.getString("cab_lat")), Double.parseDouble(get_cab_position_response_data.getString("cab_lng")));
+                    LatLng nearby_cab_position = new LatLng(Double.parseDouble(get_cab_position_response_data.getString("cab_lat")), Double.parseDouble(get_cab_position_response_data.getString("cab_lng")));
                     markerOptions1.position(nearby_cab_position);
 
                     BitmapDrawable bitmapDrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.car);
                     Bitmap b = bitmapDrawable.getBitmap();
-                    Bitmap smallCar = Bitmap.createScaledBitmap(b,60, 72,false);
+                    Bitmap smallCar = Bitmap.createScaledBitmap(b, 60, 72, false);
                     markerOptions1.icon(BitmapDescriptorFactory.fromBitmap(smallCar));
                     markerOptions1.rotation(Float.parseFloat(get_cab_position_response_data.getString("cab_bearing")));
 
-                    nearby_cab=mMap.addMarker(markerOptions1);
+                    nearby_cab = mMap.addMarker(markerOptions1);
 
                     handler.postDelayed(this, 10000);
-                }
-                else if (response_data.getString("status").equals("2"))
-                {
+                } else if (response_data.getString("status").equals("2")) {
                     ll_cancel.setClickable(false);
                     handler.removeCallbacksAndMessages(runnable);
-                    if(nearby_cab!=null)
-                    {
+                    if (nearby_cab != null) {
                         nearby_cab.remove();
                     }
 
-                    tripStarted=true;
+                    tripStarted = true;
                     cab.setVisibility(View.VISIBLE);
-                }
-                else if (response_data.getString("status").equals("3"))
-                {
+                } else if (response_data.getString("status").equals("3")) {
                     ll_cancel.setClickable(false);
                     handler.removeCallbacksAndMessages(runnable);
-                }
-                else
-                {
+                } else {
                     handler.postDelayed(this, 10000);
                 }
 
-            }
-            catch (Exception e)
-            {
-                    handler.postDelayed(this, 10000);
+            } catch (Exception e) {
+                handler.postDelayed(this, 10000);
             }
 
 
         }
     };
 
-    public JSONObject call_api(String api_url, String request_data)
-    {
+    public JSONObject call_api(String api_url, String request_data) {
         try {
             URL url = new URL(api_url);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -498,22 +455,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             writer.close();
             os.close();
 
-            BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String line="";
-            String response="";
-            while ((line=bufferedReader.readLine())!=null)
-            {
-                response+=line;
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line = "";
+            String response = "";
+            while ((line = bufferedReader.readLine()) != null) {
+                response += line;
             }
 
             Log.d("API response", response);
 
-            JSONObject response_data=new JSONObject(response);
-            return  response_data;
+            JSONObject response_data = new JSONObject(response);
+            return response_data;
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
 //            Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_LONG).show();
         }
 
@@ -528,12 +482,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.i(TAG, "Place: " + place.getName());
                 source_location.setText(place.getName());
 
-                if (source_location_marker!=null)
-                {
+                if (source_location_marker != null) {
                     source_location_marker.remove();
                 }
 
-                LatLng latLng=place.getLatLng();
+                LatLng latLng = place.getLatLng();
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(latLng);
                 markerOptions.title("Source");
@@ -543,11 +496,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 //                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(smallCar));
 //                markerOptions.rotation(location.getBearing());
-                source_location_marker=mMap.addMarker(markerOptions);
+                source_location_marker = mMap.addMarker(markerOptions);
 
 
-               setNearbyCabsOnMap(latLng);
-
+                setNearbyCabsOnMap(latLng);
 
 
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
@@ -558,20 +510,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             } else if (resultCode == RESULT_CANCELED) {
                 // The user canceled the operation.
             }
-        }
-        else if (requestCode==AUTOCOMPLETE_DESTINATITON){
+        } else if (requestCode == AUTOCOMPLETE_DESTINATITON) {
             if (resultCode == RESULT_OK) {
 //                Place place = PlaceAutocomplete.getPlace(this, data);
                 Place place = PlacePicker.getPlace(this, data);
                 Log.i(TAG, "Place: " + place.getName());
                 destination_location.setText(place.getName());
 
-                if (destination_location_marker!=null)
-                {
+                if (destination_location_marker != null) {
                     destination_location_marker.remove();
                 }
 
-                LatLng latLng=place.getLatLng();
+                LatLng latLng = place.getLatLng();
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(latLng);
                 markerOptions.title("Destination");
@@ -581,7 +531,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 //                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(smallCar));
 //                markerOptions.rotation(location.getBearing());
-                destination_location_marker=mMap.addMarker(markerOptions);
+                destination_location_marker = mMap.addMarker(markerOptions);
 
 
                 if (!source_location.getText().toString().equals("") && !destination_location.getText().toString().equals("")) {
@@ -592,8 +542,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     downloadTask.execute(url);
 
                     btnBookNow.setVisibility(View.VISIBLE);
-                }
-                else {
+                } else {
                     btnBookNow.setVisibility(View.GONE);
                 }
 
@@ -609,26 +558,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+    public void setNearbyCabsOnMap(LatLng latLng) {
+        try {
+            String api_url = "https://nearcabs.000webhostapp.com/api/get_near_cabs.php";
 
-  public void setNearbyCabsOnMap(LatLng latLng)
-  {
-      try {
-          String api_url="https://nearcabs.000webhostapp.com/api/get_near_cabs.php";
+            double user_lat = latLng.latitude;
+            double user_lng = latLng.longitude;
 
-          double user_lat=latLng.latitude;
-          double user_lng=latLng.longitude;
+            String pickup_location_cabs_request = "user_lat=" + URLEncoder.encode(String.valueOf(user_lat), "UTF-8") + "&user_lng=" + URLEncoder.encode(String.valueOf(user_lng), "UTF-8");
 
-          String pickup_location_cabs_request="user_lat="+ URLEncoder.encode(String.valueOf(user_lat), "UTF-8")+"&user_lng="+URLEncoder.encode(String.valueOf(user_lng), "UTF-8");
+            JSONObject response_data = call_api(api_url, pickup_location_cabs_request);
+            if (response_data.getString("status").equals("1")) {
+                if (nearby_cab != null) {
+                    nearby_cab.remove();
+                }
 
-          JSONObject response_data=call_api(api_url, pickup_location_cabs_request);
-          if(response_data.getString("status").equals("1"))
-          {
-              if (nearby_cab != null) {
-                  nearby_cab.remove();
-              }
-
-              MarkerOptions markerOptions1=new MarkerOptions();
-              JSONObject nearby_cab_position_data=response_data.getJSONObject("data");
+                MarkerOptions markerOptions1 = new MarkerOptions();
+                JSONObject nearby_cab_position_data = response_data.getJSONObject("data");
 
 //              cab_no=nearby_cab_position_data.getString("cab_no");
 //              cab_no_a.setText(cab_no.split(" ")[0]);
@@ -640,59 +586,58 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //              driver_phone=nearby_cab_position_data.getString("driver_phone");
 
 
-              LatLng nearby_cab_position= new LatLng(Double.parseDouble(nearby_cab_position_data.getString("cab_lat")), Double.parseDouble(nearby_cab_position_data.getString("cab_lng")));
-              markerOptions1.position(nearby_cab_position);
+                LatLng nearby_cab_position = new LatLng(Double.parseDouble(nearby_cab_position_data.getString("cab_lat")), Double.parseDouble(nearby_cab_position_data.getString("cab_lng")));
+                markerOptions1.position(nearby_cab_position);
 
-              BitmapDrawable bitmapDrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.car);
-              Bitmap b = bitmapDrawable.getBitmap();
-              Bitmap smallCar = Bitmap.createScaledBitmap(b,60, 72,false);
-              markerOptions1.icon(BitmapDescriptorFactory.fromBitmap(smallCar));
-              markerOptions1.rotation(mLastLocation.getBearing());
+                BitmapDrawable bitmapDrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.car);
+                Bitmap b = bitmapDrawable.getBitmap();
+                Bitmap smallCar = Bitmap.createScaledBitmap(b, 60, 72, false);
+                markerOptions1.icon(BitmapDescriptorFactory.fromBitmap(smallCar));
+                markerOptions1.rotation(mLastLocation.getBearing());
 
-              nearby_cab=mMap.addMarker(markerOptions1);
-          }
-          else
-          {
-              Toast.makeText(getApplicationContext(), "No cabs nearby",Toast.LENGTH_LONG).show();
-          }
+                nearby_cab = mMap.addMarker(markerOptions1);
+            } else {
+                Toast.makeText(getApplicationContext(), "No cabs nearby", Toast.LENGTH_LONG).show();
+            }
 
 
-      }
-      catch (Exception e)
-      {
+        } catch (Exception e) {
 //          Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_LONG).show();
-      }
-  }
+        }
+    }
 
 
-    private String getDirectionsUrl(LatLng origin,LatLng dest){
+    private String getDirectionsUrl(LatLng origin, LatLng dest) {
 
         // Origin of route
-        String str_origin = "origin="+origin.latitude+","+origin.longitude;
+        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
 
         // Destination of route
-        String str_dest = "destination="+dest.latitude+","+dest.longitude;
+        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
 
         // Sensor enabled
         String sensor = "sensor=false";
 
         // Building the parameters to the web service
-        String parameters = str_origin+"&"+str_dest+"&"+sensor;
+        String parameters = str_origin + "&" + str_dest + "&" + sensor;
 
         // Output format
         String output = "json";
 
         // Building the url to the web service
-        String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters;
+        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
 
         return url;
     }
-    /** A method to download json data from url */
-    private String downloadUrl(String strUrl) throws IOException{
+
+    /**
+     * A method to download json data from url
+     */
+    private String downloadUrl(String strUrl) throws IOException {
         String data = "";
         InputStream iStream = null;
         HttpURLConnection urlConnection = null;
-        try{
+        try {
             URL url = new URL(strUrl);
 
             // Creating an http connection to communicate with url
@@ -709,7 +654,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             StringBuffer sb = new StringBuffer();
 
             String line = "";
-            while( ( line = br.readLine()) != null){
+            while ((line = br.readLine()) != null) {
                 sb.append(line);
             }
 
@@ -717,9 +662,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             br.close();
 
-        }catch(Exception e){
+        } catch (Exception e) {
 //            Log.d("Exception while downloading url", e.toString());
-        }finally{
+        } finally {
             iStream.close();
             urlConnection.disconnect();
         }
@@ -736,11 +681,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // For storing data from web service
             String data = "";
 
-            try{
+            try {
                 // Fetching the data from web service
                 data = downloadUrl(url[0]);
-            }catch(Exception e){
-                Log.d("Background Task",e.toString());
+            } catch (Exception e) {
+                Log.d("Background Task", e.toString());
             }
             return data;
         }
@@ -758,8 +703,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    /** A class to parse the Google Places in JSON format */
-    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String,String>>> >{
+    /**
+     * A class to parse the Google Places in JSON format
+     */
+    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
 
         // Parsing the data in non-ui thread
         @Override
@@ -768,13 +715,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             JSONObject jObject;
             List<List<HashMap<String, String>>> routes = null;
 
-            try{
+            try {
                 jObject = new JSONObject(jsonData[0]);
                 DirectionsJSONParser parser = new DirectionsJSONParser();
 
                 // Starts parsing data
                 routes = parser.parse(jObject);
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return routes;
@@ -788,7 +735,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             MarkerOptions markerOptions = new MarkerOptions();
 
             // Traversing through all the routes
-            for(int i=0;i<result.size();i++){
+            for (int i = 0; i < result.size(); i++) {
                 points = new ArrayList<LatLng>();
                 lineOptions = new PolylineOptions();
 
@@ -796,8 +743,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 List<HashMap<String, String>> path = result.get(i);
 
                 // Fetching all the points in i-th route
-                for(int j=0;j<path.size();j++){
-                    HashMap<String,String> point = path.get(j);
+                for (int j = 0; j < path.size(); j++) {
+                    HashMap<String, String> point = path.get(j);
 
                     double lat = Double.parseDouble(point.get("lat"));
                     double lng = Double.parseDouble(point.get("lng"));
@@ -812,8 +759,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 lineOptions.color(Color.BLUE);
             }
 
-            // Drawing polyline in the Google Map for the i-th route
-            mMap.addPolyline(lineOptions);
+            try {
+                // Drawing polyline in the Google Map for the i-th route
+                mMap.addPolyline(lineOptions);
+            } catch (Exception e) {
+                // Do nothing
+            }
         }
     }
 
@@ -828,7 +779,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
 
 
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -841,15 +791,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         //Initialize Google Play Services
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
                 buildGoogleApiClient();
                 mMap.setMyLocationEnabled(true);
             }
-        }
-        else {
+        } else {
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
@@ -893,29 +842,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mLastLocation = location;
 
-        LatLng latLng=new LatLng(location.getLatitude(),location.getLongitude());
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-        if (!isSourceSet)
-        {
-            try
-            {
+        if (!isSourceSet) {
+            try {
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
 
                 Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-                List<android.location.Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                String cityName=addresses.get(0).getAddressLine(0);
-                String stateName=addresses.get(0).getAddressLine(1);
-                source_location.setText(cityName+", "+stateName);
+                List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                String cityName = addresses.get(0).getAddressLine(0);
+                String stateName = addresses.get(0).getAddressLine(1);
+                source_location.setText(cityName + ", " + stateName);
 
-                if (source_location_marker!=null)
-                {
+                if (source_location_marker != null) {
                     source_location_marker.remove();
                 }
 
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(latLng);
                 markerOptions.title("Source");
-                source_location_marker=mMap.addMarker(markerOptions);
+                source_location_marker = mMap.addMarker(markerOptions);
 
                 CameraPosition cameraPosition = new CameraPosition.Builder()
                         .target(latLng)      // Sets the center of the map to Mountain View
@@ -927,10 +873,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 setNearbyCabsOnMap(latLng);
 
-                isSourceSet=true;
-            }
-            catch (Exception e)
-            {
+                isSourceSet = true;
+            } catch (Exception e) {
 //                Toast.makeText(getApplication(), e.getMessage(), Toast.LENGTH_SHORT).show();
             }
 
@@ -952,15 +896,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-
-
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
     }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    public boolean checkLocationPermission(){
+
+    public boolean checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {

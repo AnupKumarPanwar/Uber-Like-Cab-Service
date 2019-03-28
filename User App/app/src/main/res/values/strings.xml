@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">Maps</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="app_name">User App</string>
+    <string name="google_maps_key">GOOGLE_MAPS_API_KEY</string>
 </resources>
