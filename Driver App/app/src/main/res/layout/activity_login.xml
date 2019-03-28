@@ -1,71 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_login"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.anupkumarpanwar.nearcabdriver.LoginActivity">
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin">
 
     <TextView
-        android:text="Login Here"
+        android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textView2"
-        android:textAlignment="center"
-        android:textSize="30sp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:text="Login Here"
+        android:textAlignment="center"
+        android:textSize="30sp" />
 
     <EditText
+        android:id="@+id/txtEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
-        android:ems="10"
-        android:id="@+id/txtEmail"
-        android:hint="Phone / Email"
-        android:textAlignment="center"
         android:layout_below="@+id/textView2"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="73dp" />
+        android:layout_marginTop="73dp"
+        android:ems="10"
+        android:hint="Phone / Email"
+        android:inputType="textEmailAddress"
+        android:textAlignment="center" />
 
     <Button
-        android:text="Login"
+        android:id="@+id/btnLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btnLogin"
         android:layout_below="@+id/txtPassword"
-        android:layout_alignLeft="@+id/txtPassword"
         android:layout_alignStart="@+id/txtPassword"
-        android:layout_marginTop="61dp"
+        android:layout_alignLeft="@+id/txtPassword"
+        android:layout_alignEnd="@+id/txtPassword"
         android:layout_alignRight="@+id/txtPassword"
-        android:layout_alignEnd="@+id/txtPassword" />
+        android:layout_marginTop="61dp"
+        android:text="Login" />
 
 
     <TextView
+        android:id="@+id/txtForgotPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/txtForgotPassword"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:textColor="?attr/actionModeSplitBackground"
+        android:fontFamily="sans-serif"
         android:text="Forgot Password"
-        android:fontFamily="sans-serif" />
+        android:textColor="?attr/actionModeSplitBackground" />
 
     <EditText
+        android:id="@+id/txtPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:ems="10"
-        android:id="@+id/txtPassword"
-        android:textAlignment="center"
-        android:hint="Password"
         android:layout_below="@+id/txtEmail"
-        android:layout_alignLeft="@+id/txtEmail"
         android:layout_alignStart="@+id/txtEmail"
-        android:layout_marginTop="47dp" />
+        android:layout_alignLeft="@+id/txtEmail"
+        android:layout_marginTop="47dp"
+        android:ems="10"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:textAlignment="center" />
 
 </RelativeLayout>

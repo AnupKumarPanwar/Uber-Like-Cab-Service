@@ -4,111 +4,109 @@
     android:id="@+id/activity_otp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.anupkumarpanwar.nearcabdriver.OTP">
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin">
 
     <TextView
-        android:text="Anup Kumar Panwar"
+        android:id="@+id/otptxtCutomerName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="19dp"
-        android:id="@+id/otptxtCutomerName"
+        android:text="Anup Kumar Panwar"
         android:textAlignment="center"
         android:textSize="25dp"
         android:textStyle="normal|bold" />
 
     <Button
-        android:text="Start Ride"
+        android:id="@+id/otpbtnStartRide"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/otpbtnStartRide"
-        android:background="@color/cast_expanded_controller_background_color"
-        android:textColor="#729b01"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:background="?attr/selectableItemBackground"
+        android:text="Start Ride"
+        android:textColor="#729b01" />
 
     <Button
-        android:text="Done"
+        android:id="@+id/btnDone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/btnDone"
-        android:background="@color/cast_expanded_controller_background_color"
-        android:textColor="#729b01"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true"
+        android:background="?attr/selectableItemBackground"
+        android:text="Done"
+        android:textColor="#729b01" />
 
     <TextView
-        android:text="#46 Tribune Society Complex, Raipur Khurd, Chaidgarh"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="33dp"
         android:id="@+id/otptxtPickup"
-        android:textSize="20dp"
-        android:layout_below="@+id/otptxtCutomerName"
-        android:layout_centerHorizontal="true" />
-
-    <TextView
-        android:text="#46 Tribune Society Complex, Raipur Khurd, Chaidgarh"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/otptxtCutomerName"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="33dp"
+        android:text="#46 Tribune Society Complex, Raipur Khurd, Chaidgarh"
+        android:textSize="20dp" />
+
+    <TextView
         android:id="@+id/otptxtDestination"
-        android:textSize="20dp"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/otptxtPickup"
-        android:layout_alignLeft="@+id/otptxtPickup"
         android:layout_alignStart="@+id/otptxtPickup"
-        android:layout_marginTop="27dp" />
+        android:layout_alignLeft="@+id/otptxtPickup"
+        android:layout_marginTop="27dp"
+        android:text="#46 Tribune Society Complex, Raipur Khurd, Chaidgarh"
+        android:textSize="20dp" />
 
     <EditText
+        android:id="@+id/txtotp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="number"
-        android:ems="10"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="17dp"
-        android:id="@+id/txtotp"
-        android:textAlignment="center"
         android:layout_below="@+id/otptxtDestination"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
-        android:hint="OTP" />
+        android:layout_marginBottom="17dp"
+        android:ems="10"
+        android:hint="OTP"
+        android:inputType="number"
+        android:textAlignment="center" />
 
 
     <TextView
+        android:id="@+id/otptxtFare"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/otptxtFare"
-        android:textSize="30sp"
-        android:textStyle="normal|bold"
         android:layout_below="@+id/txtotp"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="23dp"
         android:text="____"
-        android:textAlignment="center" />
-
+        android:textAlignment="center"
+        android:textSize="30sp"
+        android:textStyle="normal|bold" />
 
 
     <ImageView
-        android:layout_width="10dp"
-        android:background="#d70407"
         android:id="@+id/imageView3"
+        android:layout_width="10dp"
         android:layout_height="10dp"
-        android:layout_marginRight="14dp"
-        android:layout_marginEnd="14dp"
         android:layout_alignTop="@+id/otptxtDestination"
-        android:layout_toLeftOf="@+id/otptxtDestination"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="14dp"
+        android:layout_marginRight="14dp"
         android:layout_toStartOf="@+id/otptxtDestination"
-        android:layout_marginTop="14dp" />
+        android:layout_toLeftOf="@+id/otptxtDestination"
+        android:background="#d70407" />
 
     <ImageView
-        android:layout_width="10dp"
-        android:background="#04b904"
         android:id="@+id/imageView"
+        android:layout_width="10dp"
         android:layout_height="10dp"
-        android:layout_alignTop="@+id/otptxtPickup"
-        android:layout_alignLeft="@+id/imageView3"
         android:layout_alignStart="@+id/imageView3"
-        android:layout_marginTop="15dp" />
+        android:layout_alignLeft="@+id/imageView3"
+        android:layout_alignTop="@+id/otptxtPickup"
+        android:layout_marginTop="15dp"
+        android:background="#04b904" />
     "/>
 </RelativeLayout>

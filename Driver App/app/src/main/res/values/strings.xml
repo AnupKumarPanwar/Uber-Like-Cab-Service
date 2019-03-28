@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">Driver</string>
-    <string name="title_activity_maps">Driver</string>
+    <string name="app_name">Driver App</string>
+    <string name="google_maps_key">GOOGLE_MAPS_API_KEY</string>
 </resources>

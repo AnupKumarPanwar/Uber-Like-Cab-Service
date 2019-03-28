@@ -1,13 +1,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_height="match_parent"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true">
 
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:map="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -16,179 +14,179 @@
         tools:context="com.anupkumarpanwar.nearcabdriver.MapsActivity" />
 
     <ImageView
+        android:id="@+id/cab"
         android:layout_width="30dp"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
-        android:src="@drawable/car"
-        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:id="@+id/cab"/>
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/car" />
 
 
     <EditText
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
         android:id="@+id/source_location"
-        android:hint="Where from?"
-        android:textColor="#7e7e7f"
-        android:background="#ffffff"
-        android:paddingBottom="10dp"
-        android:paddingLeft="30dp"
-        android:paddingTop="10dp"
-        android:textSize="15dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:clickable="false"
-        android:editable="false"/>
-
-    <ImageView
-        android:layout_width="10dp"
-        android:background="#04b904"
-        android:id="@+id/green_dot"
-        android:layout_height="10dp"
-        android:layout_marginLeft="11dp"
-        android:layout_marginStart="11dp"
-        android:layout_marginBottom="15dp"
-        android:layout_alignBottom="@+id/source_location"
-        android:layout_alignLeft="@+id/source_location"
-        android:layout_alignStart="@+id/source_location" />
-
-    <EditText
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:id="@+id/destination_location"
-        android:hint="Where to?"
-        android:textColor="#7e7e7f"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:background="#ffffff"
-        android:paddingBottom="10dp"
+        android:clickable="false"
+        android:editable="false"
+        android:ems="10"
+        android:hint="Where from?"
+        android:inputType="textPersonName"
         android:paddingLeft="30dp"
         android:paddingTop="10dp"
-        android:textSize="15dp"
-        android:layout_below="@+id/green_dot"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:clickable="false"
-        android:editable="false"/>
+        android:paddingBottom="10dp"
+        android:textColor="#7e7e7f"
+        android:textSize="15dp" />
 
     <ImageView
+        android:id="@+id/green_dot"
         android:layout_width="10dp"
-        android:background="#d70407"
-        android:id="@+id/red_dot"
         android:layout_height="10dp"
-        android:layout_alignBottom="@+id/destination_location"
-        android:layout_alignLeft="@+id/green_dot"
+        android:layout_alignStart="@+id/source_location"
+        android:layout_alignLeft="@+id/source_location"
+        android:layout_alignBottom="@+id/source_location"
+        android:layout_marginStart="11dp"
+        android:layout_marginLeft="11dp"
+        android:layout_marginBottom="15dp"
+        android:background="#04b904" />
+
+    <EditText
+        android:id="@+id/destination_location"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/green_dot"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:background="#ffffff"
+        android:clickable="false"
+        android:editable="false"
+        android:ems="10"
+        android:hint="Where to?"
+        android:inputType="textPersonName"
+        android:paddingLeft="30dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:textColor="#7e7e7f"
+        android:textSize="15dp" />
+
+    <ImageView
+        android:id="@+id/red_dot"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
         android:layout_alignStart="@+id/green_dot"
-        android:layout_marginBottom="15dp" />
+        android:layout_alignLeft="@+id/green_dot"
+        android:layout_alignBottom="@+id/destination_location"
+        android:layout_marginBottom="15dp"
+        android:background="#d70407" />
 
     <RelativeLayout
+        android:id="@+id/booking_details"
         android:layout_width="match_parent"
         android:layout_height="145dp"
-        android:id="@+id/booking_details"
         android:layout_alignParentBottom="true"
         android:background="#ffffff">
 
         <Button
-            android:text="Start Ride"
+            android:id="@+id/btnStartRide"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/btnStartRide"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:background="@color/cast_expanded_controller_background_color"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:background="?attr/selectableItemBackground"
+            android:text="Start Ride"
             android:textColor="#729b01" />
 
         <Button
-            android:text="End Ride"
+            android:id="@+id/btnEndRide"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/btnEndRide"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:background="@color/cast_expanded_controller_background_color"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:background="?attr/selectableItemBackground"
+            android:text="End Ride"
             android:textColor="#729b01" />
 
         <LinearLayout
-            android:orientation="horizontal"
+            android:id="@+id/ll_book_info"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
             android:layout_marginBottom="48dp"
-            android:weightSum="1"
-            android:id="@+id/ll_book_info">
+            android:orientation="horizontal"
+            android:weightSum="1">
 
             <LinearLayout
-                android:orientation="horizontal"
+                android:id="@+id/ll_call"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1.30"
-                android:id="@+id/ll_call"
-                android:background="?attr/selectableItemBackground">
+                android:background="?attr/selectableItemBackground"
+                android:orientation="horizontal">
 
                 <ImageView
+                    android:id="@+id/imageView2"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
-                    android:src="@drawable/driverphoneicon"
-                    android:id="@+id/imageView2"
-                    android:layout_gravity="center"/>
+                    android:layout_gravity="center"
+                    android:src="@drawable/driverphoneicon" />
             </LinearLayout>
 
             <LinearLayout
-                android:orientation="vertical"
+                android:id="@+id/ll_"
                 android:layout_width="251dp"
                 android:layout_height="match_parent"
-                android:weightSum="1"
-                android:id="@+id/ll_">
+                android:orientation="vertical"
+                android:weightSum="1">
 
                 <TextView
-                    android:text="No Bookings"
+                    android:id="@+id/txtcustomer_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/txtcustomer_name"
                     android:layout_weight="0.69"
-                    android:textStyle="normal|bold"
-                    android:textSize="20dp" />
+                    android:text="No Bookings"
+                    android:textSize="20dp"
+                    android:textStyle="normal|bold" />
 
                 <TextView
-                    android:text="Please wait for the booking"
+                    android:id="@+id/txtpickup_address"
                     android:layout_width="match_parent"
                     android:layout_height="55dp"
-                    android:id="@+id/txtpickup_address" />
+                    android:text="Please wait for the booking" />
             </LinearLayout>
         </LinearLayout>
 
     </RelativeLayout>
 
     <TextView
-        android:text="Rs. 100"
+        android:id="@+id/txtFare"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/txtFare"
-        android:textAlignment="center"
-        android:background="#fffcd8"
         android:layout_above="@+id/booking_details"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:textSize="20dp"
-        android:textStyle="normal|bold"
+        android:layout_alignParentLeft="true"
+        android:background="#fffcd8"
+        android:text="Rs. 100"
+        android:textAlignment="center"
         android:textAllCaps="false"
-        android:textColor="#000000" />
+        android:textColor="#000000"
+        android:textSize="20dp"
+        android:textStyle="normal|bold" />
 
 
 </RelativeLayout>

@@ -1,4 +1,4 @@
-package com.anupkumarpanwar.nearcabdriver;
+package com.nearcabs.driverapp;
 
 /**
  * Created by Anup on 7/7/2017.
@@ -16,10 +16,12 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class DirectionsJSONParser {
 
-    /** Receives a JSONObject and returns a list of lists containing latitude and longitude */
-    public List<List<HashMap<String,String>>> parse(JSONObject jObject){
+    /**
+     * Receives a JSONObject and returns a list of lists containing latitude and longitude
+     */
+    public List<List<HashMap<String, String>>> parse(JSONObject jObject) {
 
-        List<List<HashMap<String, String>>> routes = new ArrayList<List<HashMap<String,String>>>() ;
+        List<List<HashMap<String, String>>> routes = new ArrayList<List<HashMap<String, String>>>();
         JSONArray jRoutes = null;
         JSONArray jLegs = null;
         JSONArray jSteps = null;
@@ -29,25 +31,25 @@ public class DirectionsJSONParser {
             jRoutes = jObject.getJSONArray("routes");
 
             /** Traversing all routes */
-            for(int i=0;i<jRoutes.length();i++){
-                jLegs = ( (JSONObject)jRoutes.get(i)).getJSONArray("legs");
+            for (int i = 0; i < jRoutes.length(); i++) {
+                jLegs = ((JSONObject) jRoutes.get(i)).getJSONArray("legs");
                 List path = new ArrayList<HashMap<String, String>>();
 
                 /** Traversing all legs */
-                for(int j=0;j<jLegs.length();j++){
-                    jSteps = ( (JSONObject)jLegs.get(j)).getJSONArray("steps");
+                for (int j = 0; j < jLegs.length(); j++) {
+                    jSteps = ((JSONObject) jLegs.get(j)).getJSONArray("steps");
 
                     /** Traversing all steps */
-                    for(int k=0;k<jSteps.length();k++){
+                    for (int k = 0; k < jSteps.length(); k++) {
                         String polyline = "";
-                        polyline = (String)((JSONObject)((JSONObject)jSteps.get(k)).get("polyline")).get("points");
+                        polyline = (String) ((JSONObject) ((JSONObject) jSteps.get(k)).get("polyline")).get("points");
                         List<LatLng> list = decodePoly(polyline);
 
                         /** Traversing all points */
-                        for(int l=0;l<list.size();l++){
+                        for (int l = 0; l < list.size(); l++) {
                             HashMap<String, String> hm = new HashMap<String, String>();
-                            hm.put("lat", Double.toString(((LatLng)list.get(l)).latitude) );
-                            hm.put("lng", Double.toString(((LatLng)list.get(l)).longitude) );
+                            hm.put("lat", Double.toString(((LatLng) list.get(l)).latitude));
+                            hm.put("lng", Double.toString(((LatLng) list.get(l)).longitude));
                             path.add(hm);
                         }
                     }
@@ -57,15 +59,16 @@ public class DirectionsJSONParser {
 
         } catch (JSONException e) {
             e.printStackTrace();
-        }catch (Exception e){
+        } catch (Exception e) {
         }
 
         return routes;
     }
+
     /**
      * Method to decode polyline points
      * Courtesy : http://jeffreysambells.com/2010/05/27/decoding-polylines-from-google-maps-direction-api-with-java
-     * */
+     */
     private List<LatLng> decodePoly(String encoded) {
 
         List<LatLng> poly = new ArrayList<LatLng>();
