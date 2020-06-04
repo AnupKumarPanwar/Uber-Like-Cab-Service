@@ -16,5 +16,9 @@ This project is an Uber like Android app with php backend. It allows you to book
 
 ## STEP 3
 1. Deploy the php server.
-2. Import the `database.sql` file in MySQL.
-3. Replace the network call urls in the Android App code with your server url.
+2. Open `database.sql` and update line number 20 i.e.,
+```
+-- Database: `id11748254_nearcabs`
+```
+3. Import the `database.sql` file in MySQL.
+4. Replace the network call urls in the Android App code with your server url.
