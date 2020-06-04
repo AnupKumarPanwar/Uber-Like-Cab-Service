@@ -84,7 +84,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     public void InsertData() {
         try {
-            URL url = new URL("https://nearcabs.000webhostapp.com/api/user_signup.php");
+            URL url = new URL(getString(R.string.server_url) + "/user_signup.php");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setDoInput(true);

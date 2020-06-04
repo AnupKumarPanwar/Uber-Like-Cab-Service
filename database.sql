@@ -17,7 +17,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `id2200402_near_cabs`
+-- Database: `id11748254_nearcabs`
 --
 
 -- --------------------------------------------------------

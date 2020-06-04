@@ -51,7 +51,7 @@ else
 
 			<p>Click the following link to verify your email. <br /></p>
 
-			<a href=https://nearcabs.000webhostapp.com/api/verify.php?token=' . $verification_code . '>https://nearcabs.000webhostapp.com/api/verify.php?token=' . $verification_code . '</a>
+			<a href='. $server_url. '/api/verify.php?token=' . $verification_code . '>'. $server_url. '/api/verify.php?token=' . $verification_code . '</a>
 
 			<br />
 
