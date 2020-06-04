@@ -1,7 +1,7 @@
 package com.nearcabs.driverapp;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -65,7 +65,7 @@ public class OTP extends AppCompatActivity {
 
 
                     try {
-                        String api_url = "https://nearcabs.000webhostapp.com/api/start_ride.php";
+                        String api_url = getString(R.string.server_url) + "/api/start_ride.php";
 
                         String end_ride_request = "ride_id=" + URLEncoder.encode(ride_id, "UTF-8");
 

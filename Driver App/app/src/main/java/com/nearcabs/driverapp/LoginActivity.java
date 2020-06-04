@@ -50,7 +50,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void login() {
         try {
-            URL url = new URL("https://nearcabs.000webhostapp.com/api/driver_login.php");
+            URL url = new URL(getString(R.string.server_url) + "/api/driver_login.php");
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod("POST");
             httpURLConnection.setDoOutput(true);

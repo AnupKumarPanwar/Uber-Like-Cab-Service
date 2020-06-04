@@ -136,7 +136,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 try {
-                    String api_url = "https://nearcabs.000webhostapp.com/api/end_ride.php";
+                    String api_url = getString(R.string.server_url) + "/api/end_ride.php";
 
                     String end_ride_request = "ride_id=" + URLEncoder.encode(ride_id, "UTF-8") + "&cab_id=" + URLEncoder.encode(cab_id, "UTF-8");
 
@@ -209,7 +209,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                     try {
-                        String api_url = "https://nearcabs.000webhostapp.com/api/driver_set_one_signal_id.php";
+                        String api_url = getString(R.string.server_url) + "/api/driver_set_one_signal_id.php";
 
                         String driver_set_one_signal_id_request = "driver_id=" + URLEncoder.encode(sharedPreferences.getString("id", null), "UTF-8") + "&one_signal_id=" + URLEncoder.encode(userId, "UTF-8");
 
@@ -263,7 +263,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         try {
-            String api_url = "https://nearcabs.000webhostapp.com/api/check_current_booking.php";
+            String api_url = getString(R.string.server_url) + "/api/check_current_booking.php";
 
             String check_current_booking_request = "driver_id=" + URLEncoder.encode(sharedPreferences.getString("id", null), "UTF-8");
 
@@ -361,7 +361,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         public void run() {
             try {
-                String api_url = "https://nearcabs.000webhostapp.com/api/set_cab_location.php";
+                String api_url = getString(R.string.server_url) + "/api/set_cab_location.php";
 
                 String set_cab_location_request = "cab_id=" + URLEncoder.encode(sharedPreferences.getString("cab_no", null), "UTF-8") + "&lat=" + URLEncoder.encode(String.valueOf(mLastLocation.getLatitude()), "UTF-8") + "&lng=" + URLEncoder.encode(String.valueOf(mLastLocation.getLongitude()), "UTF-8") + "&bearing=" + URLEncoder.encode(String.valueOf(mLastLocation.getBearing()), "UTF-8");
 
