@@ -2,15 +2,16 @@
 This project is an Uber like Android app with php backend. It allows you to book the nearest available cab. Driver app is also present in the repo along with the server code.
 
 ## Prerequisites
-1. Google Maps API key.
-2. OneSignal API key.
+1. Android API key - https://cloud.google.com/docs/authentication/api-keys#api_key_restrictions
+2. Google Maps API key - https://developers.google.com/places/android-sdk/get-api-key#restrict-key
+3. OneSignal API key - https://documentation.onesignal.com/docs/accounts-and-keys
 
 ## STEP 1
 ```git clone https://github.com/AnupKumarPanwar/Uber-Like-Cab-Service.git```
 
 ## STEP 2
 1. Open the User App in Android Studio.
-2. Put your GOOGLE_MAPS_API_KEY in `strings.xml`
+2. Put your GOOGLE_MAPS_API_KEY and ANDROID_API_KEY in `strings.xml`.
 3. Repeat the same process in Driver App.
 4. In Driver App, also replace ONE_SIGNAL_APP_ID in build.gradle (module:app) with your id.
 
@@ -22,3 +23,5 @@ This project is an Uber like Android app with php backend. It allows you to book
 ```
 3. Import the `database.sql` file in MySQL.
 4. Replace the network call urls in the Android App code with your server url.
+
+Note: Check this repo for PlacePicker related issues https://github.com/rtchagas/pingplacepicker
