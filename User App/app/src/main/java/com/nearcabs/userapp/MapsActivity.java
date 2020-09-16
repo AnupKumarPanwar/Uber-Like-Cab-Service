@@ -19,9 +19,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -32,17 +29,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
+
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -53,6 +48,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.libraries.places.api.model.Place;
+import com.rtchagas.pingplacepicker.PingPlacePicker;
 
 import org.json.JSONObject;
 
@@ -77,9 +74,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
 
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     int flag = 0;
-    boolean isSourceSet = false, tripStarted = false;
     ;
+    boolean isSourceSet = false, tripStarted = false;
     EditText source_location, destination_location;
     String TAG = "LocationSelect";
     int AUTOCOMPLETE_SOURCE = 1, AUTOCOMPLETE_DESTINATITON = 2;
@@ -100,6 +98,64 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ProgressDialog progressDialog;
     Timer timer;
     Handler handler;
+    public Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            MarkerOptions markerOptions1;
+            try {
+
+                String api_url = getString(R.string.server_url) + "/get_cab_location.php";
+
+                String get_cab_location_request = "cab_id=" + URLEncoder.encode(cab_id, "UTF-8") + "&ride_id=" + URLEncoder.encode(ride_id, "UTF-8");
+
+                JSONObject response_data = call_api(api_url, get_cab_location_request);
+
+//                Toast.makeText(getApplicationContext(), response_data.toString(), Toast.LENGTH_LONG).show();
+
+                if (response_data.getString("status").equals("1")) {
+                    if (nearby_cab != null) {
+                        nearby_cab.remove();
+                    }
+
+                    markerOptions1 = new MarkerOptions();
+                    JSONObject get_cab_position_response_data = response_data.getJSONObject("data");
+
+
+                    LatLng nearby_cab_position = new LatLng(Double.parseDouble(get_cab_position_response_data.getString("cab_lat")), Double.parseDouble(get_cab_position_response_data.getString("cab_lng")));
+                    markerOptions1.position(nearby_cab_position);
+
+                    BitmapDrawable bitmapDrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.car);
+                    Bitmap b = bitmapDrawable.getBitmap();
+                    Bitmap smallCar = Bitmap.createScaledBitmap(b, 60, 72, false);
+                    markerOptions1.icon(BitmapDescriptorFactory.fromBitmap(smallCar));
+                    markerOptions1.rotation(Float.parseFloat(get_cab_position_response_data.getString("cab_bearing")));
+
+                    nearby_cab = mMap.addMarker(markerOptions1);
+
+                    handler.postDelayed(this, 10000);
+                } else if (response_data.getString("status").equals("2")) {
+                    ll_cancel.setClickable(false);
+                    handler.removeCallbacksAndMessages(runnable);
+                    if (nearby_cab != null) {
+                        nearby_cab.remove();
+                    }
+
+                    tripStarted = true;
+                    cab.setVisibility(View.VISIBLE);
+                } else if (response_data.getString("status").equals("3")) {
+                    ll_cancel.setClickable(false);
+                    handler.removeCallbacksAndMessages(runnable);
+                } else {
+                    handler.postDelayed(this, 10000);
+                }
+
+            } catch (Exception e) {
+                handler.postDelayed(this, 10000);
+            }
+
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -291,15 +347,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                        Intent intent =
 //                                new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY).build(activity);
 //                        startActivityForResult(intent, AUTOCOMPLETE_SOURCE);
-                        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+                        PingPlacePicker.IntentBuilder builder = new PingPlacePicker.IntentBuilder();
+                        builder.setAndroidApiKey(getResources().getString(R.string.android_api_key))
+                                .setMapsApiKey(getResources().getString(R.string.google_maps_key));
                         startActivityForResult(builder.build(activity), AUTOCOMPLETE_SOURCE);
-                    } catch (GooglePlayServicesRepairableException e) {
+                    } catch (Exception e) {
                         // TODO: Handle the error.
 //                        Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
-                    } catch (GooglePlayServicesNotAvailableException e) {
-                        // TODO: Handle the error.
-//                        Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
-
                     }
                 }
             }
@@ -313,15 +367,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                    Intent intent =
 //                            new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY).build(activity);
 //                    startActivityForResult(intent, AUTOCOMPLETE_SOURCE);
-                    PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+                    PingPlacePicker.IntentBuilder builder = new PingPlacePicker.IntentBuilder();
+                    builder.setAndroidApiKey(getResources().getString(R.string.android_api_key))
+                            .setMapsApiKey(getResources().getString(R.string.google_maps_key));
                     startActivityForResult(builder.build(activity), AUTOCOMPLETE_SOURCE);
-                } catch (GooglePlayServicesRepairableException e) {
+                } catch (Exception e) {
                     // TODO: Handle the error.
 //                    Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
-                } catch (GooglePlayServicesNotAvailableException e) {
-                    // TODO: Handle the error.
-//                    Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
-
                 }
             }
         });
@@ -336,15 +388,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                        Intent intent =
 //                                new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY).build(activity);
 //                        startActivityForResult(intent, AUTOCOMPLETE_DESTINATITON);
-                        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+                        PingPlacePicker.IntentBuilder builder = new PingPlacePicker.IntentBuilder();
+                        builder.setAndroidApiKey(getResources().getString(R.string.android_api_key))
+                                .setMapsApiKey(getResources().getString(R.string.google_maps_key));
                         startActivityForResult(builder.build(activity), AUTOCOMPLETE_DESTINATITON);
-                    } catch (GooglePlayServicesRepairableException e) {
+                    } catch (Exception e) {
                         // TODO: Handle the error.
 //                        Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
-                    } catch (GooglePlayServicesNotAvailableException e) {
-                        // TODO: Handle the error.
-//                        Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
-
                     }
                 }
             }
@@ -358,15 +408,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                    Intent intent =
 //                            new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY).build(activity);
 //                    startActivityForResult(intent, AUTOCOMPLETE_DESTINATITON);
-                    PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+                    PingPlacePicker.IntentBuilder builder = new PingPlacePicker.IntentBuilder();
+                    builder.setAndroidApiKey(getResources().getString(R.string.android_api_key))
+                            .setMapsApiKey(getResources().getString(R.string.google_maps_key));
                     startActivityForResult(builder.build(activity), AUTOCOMPLETE_DESTINATITON);
-                } catch (GooglePlayServicesRepairableException e) {
+                } catch (Exception e) {
                     // TODO: Handle the error.
 //                    Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
-                } catch (GooglePlayServicesNotAvailableException e) {
-                    // TODO: Handle the error.
-//                    Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
-
                 }
             }
         });
@@ -378,66 +426,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
     }
-
-
-    public Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            MarkerOptions markerOptions1;
-            try {
-
-                String api_url = getString(R.string.server_url) + "/get_cab_location.php";
-
-                String get_cab_location_request = "cab_id=" + URLEncoder.encode(cab_id, "UTF-8") + "&ride_id=" + URLEncoder.encode(ride_id, "UTF-8");
-
-                JSONObject response_data = call_api(api_url, get_cab_location_request);
-
-//                Toast.makeText(getApplicationContext(), response_data.toString(), Toast.LENGTH_LONG).show();
-
-                if (response_data.getString("status").equals("1")) {
-                    if (nearby_cab != null) {
-                        nearby_cab.remove();
-                    }
-
-                    markerOptions1 = new MarkerOptions();
-                    JSONObject get_cab_position_response_data = response_data.getJSONObject("data");
-
-
-                    LatLng nearby_cab_position = new LatLng(Double.parseDouble(get_cab_position_response_data.getString("cab_lat")), Double.parseDouble(get_cab_position_response_data.getString("cab_lng")));
-                    markerOptions1.position(nearby_cab_position);
-
-                    BitmapDrawable bitmapDrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.car);
-                    Bitmap b = bitmapDrawable.getBitmap();
-                    Bitmap smallCar = Bitmap.createScaledBitmap(b, 60, 72, false);
-                    markerOptions1.icon(BitmapDescriptorFactory.fromBitmap(smallCar));
-                    markerOptions1.rotation(Float.parseFloat(get_cab_position_response_data.getString("cab_bearing")));
-
-                    nearby_cab = mMap.addMarker(markerOptions1);
-
-                    handler.postDelayed(this, 10000);
-                } else if (response_data.getString("status").equals("2")) {
-                    ll_cancel.setClickable(false);
-                    handler.removeCallbacksAndMessages(runnable);
-                    if (nearby_cab != null) {
-                        nearby_cab.remove();
-                    }
-
-                    tripStarted = true;
-                    cab.setVisibility(View.VISIBLE);
-                } else if (response_data.getString("status").equals("3")) {
-                    ll_cancel.setClickable(false);
-                    handler.removeCallbacksAndMessages(runnable);
-                } else {
-                    handler.postDelayed(this, 10000);
-                }
-
-            } catch (Exception e) {
-                handler.postDelayed(this, 10000);
-            }
-
-
-        }
-    };
 
     public JSONObject call_api(String api_url, String request_data) {
         try {
@@ -476,9 +464,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == AUTOCOMPLETE_SOURCE) {
             if (resultCode == RESULT_OK) {
-                Place place = PlacePicker.getPlace(this, data);
+                Place place = PingPlacePicker.getPlace(data);
                 Log.i(TAG, "Place: " + place.getName());
                 source_location.setText(place.getName());
 
@@ -498,14 +487,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                markerOptions.rotation(location.getBearing());
                 source_location_marker = mMap.addMarker(markerOptions);
 
-
                 setNearbyCabsOnMap(latLng);
-
-
-            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                Status status = PlaceAutocomplete.getStatus(this, data);
-                // TODO: Handle the error.
-                Log.i(TAG, status.getStatusMessage());
 
             } else if (resultCode == RESULT_CANCELED) {
                 // The user canceled the operation.
@@ -513,7 +495,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else if (requestCode == AUTOCOMPLETE_DESTINATITON) {
             if (resultCode == RESULT_OK) {
 //                Place place = PlaceAutocomplete.getPlace(this, data);
-                Place place = PlacePicker.getPlace(this, data);
+                Place place = PingPlacePicker.getPlace(data);
                 Log.i(TAG, "Place: " + place.getName());
                 destination_location.setText(place.getName());
 
@@ -546,17 +528,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     btnBookNow.setVisibility(View.GONE);
                 }
 
-            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                Status status = PlaceAutocomplete.getStatus(this, data);
-                // TODO: Handle the error.
-                Log.i(TAG, status.getStatusMessage());
-
             } else if (resultCode == RESULT_CANCELED) {
                 // The user canceled the operation.
             }
         }
     }
-
 
     public void setNearbyCabsOnMap(LatLng latLng) {
         try {
@@ -605,7 +581,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //          Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_LONG).show();
         }
     }
-
 
     private String getDirectionsUrl(LatLng origin, LatLng dest) {
 
@@ -669,103 +644,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             urlConnection.disconnect();
         }
         return data;
-    }
-
-    // Fetches data from url passed
-    private class DownloadTask extends AsyncTask<String, Void, String> {
-
-        // Downloading data in non-ui thread
-        @Override
-        protected String doInBackground(String... url) {
-
-            // For storing data from web service
-            String data = "";
-
-            try {
-                // Fetching the data from web service
-                data = downloadUrl(url[0]);
-            } catch (Exception e) {
-                Log.d("Background Task", e.toString());
-            }
-            return data;
-        }
-
-        // Executes in UI thread, after the execution of
-        // doInBackground()
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            ParserTask parserTask = new ParserTask();
-
-            // Invokes the thread for parsing the JSON data
-            parserTask.execute(result);
-        }
-    }
-
-    /**
-     * A class to parse the Google Places in JSON format
-     */
-    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
-
-        // Parsing the data in non-ui thread
-        @Override
-        protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
-
-            JSONObject jObject;
-            List<List<HashMap<String, String>>> routes = null;
-
-            try {
-                jObject = new JSONObject(jsonData[0]);
-                DirectionsJSONParser parser = new DirectionsJSONParser();
-
-                // Starts parsing data
-                routes = parser.parse(jObject);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return routes;
-        }
-
-        // Executes in UI thread, after the parsing process
-        @Override
-        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
-            ArrayList<LatLng> points = null;
-            PolylineOptions lineOptions = null;
-            MarkerOptions markerOptions = new MarkerOptions();
-
-            // Traversing through all the routes
-            for (int i = 0; i < result.size(); i++) {
-                points = new ArrayList<LatLng>();
-                lineOptions = new PolylineOptions();
-
-                // Fetching i-th route
-                List<HashMap<String, String>> path = result.get(i);
-
-                // Fetching all the points in i-th route
-                for (int j = 0; j < path.size(); j++) {
-                    HashMap<String, String> point = path.get(j);
-
-                    double lat = Double.parseDouble(point.get("lat"));
-                    double lng = Double.parseDouble(point.get("lng"));
-                    LatLng position = new LatLng(lat, lng);
-
-                    points.add(position);
-                }
-
-                // Adding all the points in the route to LineOptions
-                lineOptions.addAll(points);
-                lineOptions.width(6);
-                lineOptions.color(Color.BLUE);
-            }
-
-            try {
-                // Drawing polyline in the Google Map for the i-th route
-                mMap.addPolyline(lineOptions);
-            } catch (Exception e) {
-                // Do nothing
-            }
-        }
     }
 
     /**
@@ -895,15 +773,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
     }
 
-    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-
-    public boolean checkLocationPermission() {
+    public void checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -928,9 +803,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
             }
-            return false;
         } else {
-            return true;
         }
     }
 
@@ -965,6 +838,103 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             // other 'case' lines to check for other permissions this app might request.
             // You can add here other case statements according to your requirement.
+        }
+    }
+
+    // Fetches data from url passed
+    private class DownloadTask extends AsyncTask<String, Void, String> {
+
+        // Downloading data in non-ui thread
+        @Override
+        protected String doInBackground(String... url) {
+
+            // For storing data from web service
+            String data = "";
+
+            try {
+                // Fetching the data from web service
+                data = downloadUrl(url[0]);
+            } catch (Exception e) {
+                Log.d("Background Task", e.toString());
+            }
+            return data;
+        }
+
+        // Executes in UI thread, after the execution of
+        // doInBackground()
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            ParserTask parserTask = new ParserTask();
+
+            // Invokes the thread for parsing the JSON data
+            parserTask.execute(result);
+        }
+    }
+
+    /**
+     * A class to parse the Google Places in JSON format
+     */
+    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
+
+        // Parsing the data in non-ui thread
+        @Override
+        protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
+
+            JSONObject jObject;
+            List<List<HashMap<String, String>>> routes = null;
+
+            try {
+                jObject = new JSONObject(jsonData[0]);
+                DirectionsJSONParser parser = new DirectionsJSONParser();
+
+                // Starts parsing data
+                routes = parser.parse(jObject);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return routes;
+        }
+
+        // Executes in UI thread, after the parsing process
+        @Override
+        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
+            ArrayList<LatLng> points = null;
+            PolylineOptions lineOptions = null;
+            MarkerOptions markerOptions = new MarkerOptions();
+
+            // Traversing through all the routes
+            for (int i = 0; i < result.size(); i++) {
+                points = new ArrayList<LatLng>();
+                lineOptions = new PolylineOptions();
+
+                // Fetching i-th route
+                List<HashMap<String, String>> path = result.get(i);
+
+                // Fetching all the points in i-th route
+                for (int j = 0; j < path.size(); j++) {
+                    HashMap<String, String> point = path.get(j);
+
+                    double lat = Double.parseDouble(point.get("lat"));
+                    double lng = Double.parseDouble(point.get("lng"));
+                    LatLng position = new LatLng(lat, lng);
+
+                    points.add(position);
+                }
+
+                // Adding all the points in the route to LineOptions
+                lineOptions.addAll(points);
+                lineOptions.width(6);
+                lineOptions.color(Color.BLUE);
+            }
+
+            try {
+                // Drawing polyline in the Google Map for the i-th route
+                mMap.addPolyline(lineOptions);
+            } catch (Exception e) {
+                // Do nothing
+            }
         }
     }
 }

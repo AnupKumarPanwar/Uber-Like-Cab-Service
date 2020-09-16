@@ -2,9 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Uber-Like-Cab-Service-User App-app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Uber-Like-Cab-Service-User App-app.iml" group="User App/app" />
       <module fileurl="file://$PROJECT_DIR$/User App.iml" filepath="$PROJECT_DIR$/User App.iml" group="User App" />
       <module fileurl="file://$PROJECT_DIR$/app/User App-app.iml" filepath="$PROJECT_DIR$/app/User App-app.iml" group="User App/app" />
       <module fileurl="file://$PROJECT_DIR$/UserApp.iml" filepath="$PROJECT_DIR$/UserApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/User_App.iml" filepath="$PROJECT_DIR$/.idea/modules/User_App.iml" group="User_App" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
